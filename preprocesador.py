@@ -1,45 +1,51 @@
 import re
-
-constantes = {}
-
-
-def reemplazarConstantes(match):
-    constante = match.group(0)
-    return constantes.get(constante)
+from analisisLexico import lexer
 
 
-def preprocesarCodigo(codigoFuente):
-    # Reeemplazar las constantes definidas y elimina la linea donde se definieron
+# Función para preprocesar el código fuente
+def preprocesar_codigo(codigoFuente):
+    resultado = []
+    lexer.input(codigoFuente)
 
-    # Itera sobre las lineas donde se definen las constantes y guarda su nombre y valor
-    for match in re.finditer(r"const (\w+) = ([^\n]+)", codigoFuente):
-        nombreConstante = match.group(1)
-        valorConstante = match.group(2)
-        constantes[nombreConstante] = valorConstante
+    while True:
+        tok = lexer.token()
+        if not tok:
+            break
+        if tok.type == "IMPORT":
+            # Leer el contenido del archivo importado
+            resultado.append("IMPORT")
+        elif tok.type == "COMMENT" or tok.type == "NEWLINE":
+            continue  # Ignorar comentarios y nuevas líneas
+        elif (
+            tok.type == "ID"
+            or tok.type == "NUMBER"
+            or tok.type == "PLUS"
+            or tok.type == "MINUS"
+            or tok.type == "TIMES"
+            or tok.type == "DIVIDE"
+            or tok.type == "EQUALS"
+            or tok.type == "STRING"
+        ):
+            resultado.append(tok.value)
+        elif tok.type == "WHITESPACE":
+            resultado.append(tok.value)
 
-    # Eliminar la línea donde se define el const
-    codigoFuente = re.sub(r"const \w+ = [^\n]+\n", "", codigoFuente)
-    pattern = rf"\b({'|'.join(re.escape(key) for key in constantes.keys())})\b"
-    # pattern = \b(PI|E)\b <- output de ejemplo
+    # print("resultado", resultado)
+    codigo_preprocesado = "".join(str(resultado))
 
-    # Reemplazar las constantes por su valor
-    codigoFuente = re.sub(pattern, reemplazarConstantes, codigoFuente)
+    # Eliminar líneas en blanco
+    codigo_preprocesado = re.sub(r"\n\s*\n", "\n", codigo_preprocesado)
+    # Eliminar espacios en blanco al final de la línea
+    codigo_preprocesado = re.sub(
+        r"[ \t]+$", "", codigo_preprocesado, flags=re.MULTILINE
+    )
 
-    # Eliminar cualquier línea en blanco inicial
-    codigoFuente = codigoFuente.lstrip()
-    # Eliminar lineas en blanco en general
-    codigoFuente = re.sub(r"\n+", "\n", codigoFuente)
-    # Eliminar comentarios
-    codigoFuente = re.sub(r"#.*", "", codigoFuente)
-    # Eliminar espacios en blanco al final de la linea
-    codigoFuente = re.sub(r"[ \t]+$", "", codigoFuente, flags=re.MULTILINE)
-
-    return codigoFuente
+    return codigo_preprocesado
 
 
 # Código de prueba
 programa = """
-import ./libreria.txt
+import "libreria.txt"
 const PI = 3.141592654
 
 const E = 2.718281828
@@ -52,5 +58,5 @@ sino a == 3
     a = E
 """
 
-codigoPrueba = preprocesarCodigo(programa)
-print(codigoPrueba)
+codigo_preprocesado = preprocesar_codigo(programa)
+print(codigo_preprocesado)
