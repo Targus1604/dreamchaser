@@ -1,4 +1,5 @@
 import ply.lex as lex
+from utils.programas import programaPrueba
 
 # Lista de nombres de tokens
 tokens = (
@@ -34,7 +35,14 @@ def t_NUMERO(t):
 
 # Regla para indentación (4 espacios en blanco)
 def t_INDENTACION(t):
-    r"[ \t]{4}"
+    r"[ ]{4}"
+    return t
+
+
+# Regla para nuevas líneas
+def t_NUEVA_LINEA(t):
+    r"\n+"
+    t.lexer.lineno += len(t.value)
     return t
 
 
@@ -48,13 +56,6 @@ def t_ESPACIO(t):
 def t_COMENTARIO(t):
     r"\#.*"
     pass  # Ignorar comentarios
-
-
-# Regla para nuevas líneas
-def t_NUEVA_LINEA(t):
-    r"\n+"
-    t.lexer.lineno += len(t.value)
-    return t
 
 
 # Regla para importaciones
@@ -73,17 +74,9 @@ t_ignore = "\t"
 
 # Construir el lexer
 lexer = lex.lex()
-# programa = """
 
-# const PI = 3.141592654
-# """
-programa = """
-si calcular # Esto es un comentario
-    a = PI * a # Se va a eliminar
-sino a == 3
-    a = E
-"""
-lexer.input(programa)
+
+lexer.input(programaPrueba)
 
 # Tokenize
 while True:
