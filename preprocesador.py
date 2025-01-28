@@ -1,84 +1,47 @@
-import ply.lex as lex
 import re
 
-# Lista de tokens
-tokens = (
-    "CONST",
-    "ID",
-    "NUMBER",
-    "COMMENT",
-    "NEWLINE",
-    "EQUALS",
-    "OPERATOR",
-    "WHITESPACE",
-)
-
-# Definición de tokens
-t_CONST = r"const"
-t_ID = r"[a-zA-Z_][a-zA-Z_0-9]*"
-t_NUMBER = r"\d+(\.\d+)?"
-t_EQUALS = r"="
-t_OPERATOR = r"[\+\-\*/]"
-t_WHITESPACE = r"[ \t]+"
-t_ignore = ""
-
-# Diccionario para almacenar constantes
 constantes = {}
 
 
-# Definición de comentarios
-def t_COMMENT(t):
-    r"\#.*"
-    pass  # Ignorar comentarios
+def reemplazarConstantes(match):
+    constante = match.group(0)
+    return constantes.get(constante)
 
 
-# Definición de nuevas líneas
-def t_NEWLINE(t):
-    r"\n+"
-    t.lexer.lineno += len(t.value)
-    return t
+def preprocesarCodigo(codigoFuente):
+    # Reeemplazar las constantes definidas y elimina la linea donde se definieron
 
+    # Itera sobre las lineas donde se definen las constantes y guarda su nombre y valor
+    for match in re.finditer(r"const (\w+) = ([^\n]+)", codigoFuente):
+        nombreConstante = match.group(1)
+        valorConstante = match.group(2)
+        constantes[nombreConstante] = valorConstante
 
-# Definición de errores
-def t_error(t):
-    print(f"Caracter ilegal '{t.value[0]}'")
-    t.lexer.skip(1)
+    # Eliminar la línea donde se define el const
+    codigoFuente = re.sub(r"const \w+ = [^\n]+\n", "", codigoFuente)
+    pattern = rf"\b({'|'.join(re.escape(key) for key in constantes.keys())})\b"
+    # pattern = \b(PI|E)\b <- output de ejemplo
 
+    # Reemplazar las constantes por su valor
+    codigoFuente = re.sub(pattern, reemplazarConstantes, codigoFuente)
 
-# Definición de reglas léxicas para constantes
-def t_CONST_DEF(t):
-    r"const\s+([a-zA-Z_][a-zA-Z_0-9]*)\s*=\s*(\d+(\.\d+)?)"
-    constantes[t.lexer.lexmatch.group(1)] = t.lexer.lexmatch.group(2)
-    pass  # Ignorar la definición de constantes
+    # Eliminar cualquier línea en blanco inicial
+    codigoFuente = codigoFuente.lstrip()
+    # Eliminar lineas en blanco en general
+    codigoFuente = re.sub(r"\n+", "\n", codigoFuente)
+    # Eliminar comentarios
+    codigoFuente = re.sub(r"#.*", "", codigoFuente)
+    # Eliminar espacios en blanco al final de la linea
+    codigoFuente = re.sub(r"[ \t]+$", "", codigoFuente, flags=re.MULTILINE)
 
-
-# Construir el lexer
-lexer = lex.lex()
-
-
-# Función para reemplazar constantes en el código fuente
-def reemplazar_constantes(codigoFuente):
-    resultado = []
-    lexer.input(codigoFuente)
-    print(constantes)
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break
-        if tok.type == "ID" and tok.value in constantes:
-            resultado.append(constantes[tok.value])
-        elif tok.type == "WHITESPACE":
-            resultado.append(tok.value)
-        elif tok.type == "NEWLINE":
-            resultado.append("\n")
-        else:
-            resultado.append(tok.value)
-    return "".join(resultado)
+    return codigoFuente
 
 
 # Código de prueba
 programa = """
+import ./libreria.txt
 const PI = 3.141592654
+
 const E = 2.718281828
 a = 0
 calcular = verdadero
@@ -89,13 +52,5 @@ sino a == 3
     a = E
 """
 
-codigoPrueba = reemplazar_constantes(programa)
-
-# Eliminar lineas en blanco
-codigoPrueba = re.sub(r"\n\s*\n", "\n", codigoPrueba)
-# Eliminar comentarios
-codigoPrueba = re.sub(r"#.*", "", codigoPrueba)
-# Eliminar espacios en blanco al final de la linea
-codigoPrueba = re.sub(r"[ \t]+$", "", codigoPrueba, flags=re.MULTILINE)
-
+codigoPrueba = preprocesarCodigo(programa)
 print(codigoPrueba)
