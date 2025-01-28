@@ -1,4 +1,3 @@
-import re
 from analisisLexico import lexer
 
 
@@ -14,31 +13,13 @@ def preprocesar_codigo(codigoFuente):
         if tok.type == "IMPORT":
             # Leer el contenido del archivo importado
             resultado.append("IMPORT")
-        elif tok.type == "COMMENT" or tok.type == "NEWLINE":
-            continue  # Ignorar comentarios y nuevas líneas
-        elif (
-            tok.type == "ID"
-            or tok.type == "NUMBER"
-            or tok.type == "PLUS"
-            or tok.type == "MINUS"
-            or tok.type == "TIMES"
-            or tok.type == "DIVIDE"
-            or tok.type == "EQUALS"
-            or tok.type == "STRING"
-        ):
-            resultado.append(tok.value)
-        elif tok.type == "WHITESPACE":
+        elif tok.type == "COMENTARIO":
+            continue  # Ignorar comentarios
+        else:
             resultado.append(tok.value)
 
-    # print("resultado", resultado)
-    codigo_preprocesado = "".join(str(resultado))
-
-    # Eliminar líneas en blanco
-    codigo_preprocesado = re.sub(r"\n\s*\n", "\n", codigo_preprocesado)
-    # Eliminar espacios en blanco al final de la línea
-    codigo_preprocesado = re.sub(
-        r"[ \t]+$", "", codigo_preprocesado, flags=re.MULTILINE
-    )
+    print("resultado", resultado)
+    codigo_preprocesado = "".join(resultado)
 
     return codigo_preprocesado
 
