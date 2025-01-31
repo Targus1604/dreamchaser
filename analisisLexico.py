@@ -1,20 +1,57 @@
 import ply.lex as lex
-from utils.programas import programaPrueba
+from utils.programas import programaPrueba  # Importa string de un programa prueba
+
+# Palabras reservadas
+palabrasReservadas = {
+    "si": "SI",
+    "sino": "SINO",
+    "verdadero": "VERDADERO",
+    "falso": "FALSO",
+    "const": "CONST",
+    "mientras": "MIENTRAS",
+    "hacer": "HACER",
+    "para": "PARA",
+    "funcion": "FUNCION",
+    "retornar": "RETORNAR",
+    "importar": "IMPORTAR",
+}
 
 # Lista de nombres de tokens
 tokens = (
-    "NUMERO",
-    "MAS",
-    "MENOS",
+    # Operadores lógicos
+    "Y",
+    "O",
+    "NO",
+    # Operadores relacionales
+    "IGUALDAD",
+    "DIFERENTE",
+    "MAYOR",
+    "MENOR",
+    "MAYOR_IGUAL",
+    "MENOR_IGUAL",
+    "IMPORTAR",
+    # Operadores aritméticos
+    "SUMA",
+    "RESTA",
     "MULTIPLICACION",
     "DIVISION",
-    "ID",
-    "IGUAL",
-    "NUEVA_LINEA",
-    "COMENTARIO",
-    "IMPORT",
+    "DIVISION_ENTERA",
+    # Operador de asignación
+    "ASIGNACION",
+    # Delimitadores
+    "PARENTESIS_IZQUIERDO",
+    "PARENTESIS_DERECHO",
+    # Literales e identificadores
+    "NUMERO",
     "STRING",
+    "BOOLEANO",
+    "ID",
+    # Comentarios
+    "COMENTARIO",
+    # Espacios y tabulaciones
+    "NUEVA_LINEA",
     "INDENTACION",
+    +list(palabrasReservadas.values()),
 )
 
 # Reglas de expresiones regulares para tokens simples
