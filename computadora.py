@@ -58,5 +58,5 @@ class Computadora:
 
 
 dreamChaser = Computadora()
-dreamChaser.cargar_codigo(codigo_entrada_enlazador, direccion_de_inicio=8)
+dreamChaser.cargar_codigo(codigo_entrada_enlazador, direccion_de_inicio=3)
 dreamChaser.mostrar_memoria()
