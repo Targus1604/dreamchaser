@@ -32,13 +32,20 @@ def enlazador_cargador(codigo_entrada, direccion_base=0x00000):
                 "Se ha excedido el tamaño de la memoria para la siguiente instrucción",
                 instr,
             )
+        # Asumiendo que las direcciones empiezan desde 0
         if instr in operaciones_memoria:
-            direccion_actual = format(direccion, "010b")
-            direccion_resuelta = instr[:-10] + direccion_actual
-            mapa_memoria[direccion] = instr
-            direccion += 1
+            direccion_actual = direccion
+            # Últimos 10 bits como dirección relativa
+            direccion_relativa_binaria = int(instr[-10:], 2)
+            direccion_absoluta = (
+                direccion_actual + direccion_relativa_binaria
+            )  # Sumar la dirección relativa
+            direccion_absoluta_binaria = format(direccion_absoluta, "010b")
+            direccion_resuelta = instr[:-10] + direccion_absoluta_binaria
+            mapa_memoria[direccion] = direccion_resuelta
         else:
             mapa_memoria[direccion] = instr
-            direccion += 1
+
+        direccion += 1
 
     return mapa_memoria
