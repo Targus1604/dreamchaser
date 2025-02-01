@@ -1,6 +1,10 @@
 import ply.lex as lex
 from utils.programas import programaPrueba  # Importa string de un programa prueba
 
+# ------------------------------------------------------------
+# Definición de tokens
+# ------------------------------------------------------------
+
 # Palabras reservadas
 palabrasReservadas = {
     "si": "SI",
@@ -18,6 +22,8 @@ palabrasReservadas = {
 
 # Lista de nombres de tokens
 tokens = (
+    # Palabras reservadas
+    *palabrasReservadas.values(),
     # Operadores lógicos
     "Y",
     "O",
@@ -29,7 +35,6 @@ tokens = (
     "MENOR",
     "MAYOR_IGUAL",
     "MENOR_IGUAL",
-    "IMPORTAR",
     # Operadores aritméticos
     "SUMA",
     "RESTA",
@@ -51,22 +56,69 @@ tokens = (
     # Espacios y tabulaciones
     "NUEVA_LINEA",
     "INDENTACION",
-    +list(palabrasReservadas.values()),
+    "ESPACIO",
 )
 
+# ------------------------------------------------------------
+# Definiciones regulares y extensiones regulares
+# ------------------------------------------------------------
+
+# Numeros
+digito = r"[0-9]"
+digito_parte_flotante = r"\." + digito + r"+"
+digito_parte_exponente = r"[eE][+-]?" + digito + r"+"
+
+# Letras
+letra = r"[a-zA-Z_]"
+
+# Extensiones compuestas
+identificador = letra + r"(" + letra + r"|" + digito + r")*"
+
+numero_flotante_opcional = (
+    digito
+    + r"("
+    + digito_parte_flotante
+    + r")?"
+    + r"("
+    + digito_parte_exponente
+    + r")?"
+)
+
+# ------------------------------------------------------------
+# Reglas para reconocer tokens
+# ------------------------------------------------------------
+
+# Tokens a ignorar
+t_ignore = "\t"  # Ignorar tabulaciones
+t_ignore_COMENTARIO = r"\#.*"
+
+
+# Regla para importar librerías
+def t_IMPORTAR(t):
+    r"importar\s+\'.*?\'"
+    return t
+
+
 # Reglas de expresiones regulares para tokens simples
-t_ID = r"[a-zA-Z_][a-zA-Z_0-9]*"
-t_MAS = r"\+"
-t_MENOS = r"-"
+t_SUMA = r"\+"
+t_RESTA = r"-"
 t_MULTIPLICACION = r"\*"
 t_DIVISION = r"/"
-t_IGUAL = r"="
-t_STRING = r"\".*?\""
+t_ASIGNACION = r"="
+t_STRING = r"\'.*?\'"
 
 
-# Regla para números
+# Regla para identificadores y palabras reservadas
+@lex.TOKEN(identificador)
+def t_ID(t):
+    t.type = palabrasReservadas.get(
+        t.value, "ID"
+    )  # Verificar si es una palabra reservada
+    return t
+
+
+@lex.TOKEN(numero_flotante_opcional)
 def t_NUMERO(t):
-    r"(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"
     return t
 
 
@@ -83,41 +135,31 @@ def t_NUEVA_LINEA(t):
     return t
 
 
-# # Regla para espacios y tabulaciones (pero no saltos de línea)
-def t_ESPACIO(t):
-    r"\s"
-    pass  # Ignorar espacios y tabulaciones
-
-
-# Regla para comentarios
-def t_COMENTARIO(t):
-    r"\#.*"
-    pass  # Ignorar comentarios
-
-
-# Regla para importaciones
-def t_IMPORT(t):
-    r"import\s+\".*?\" "
-    return t
+t_ESPACIO = r"\s"
 
 
 # Regla para manejar errores
 def t_error(t):
-    print(f"Caracter ilegal '{t.value[0]}'")
+    print(f"Caracter no reconocido '{t.value[0]}'")
     t.lexer.skip(1)
 
 
-t_ignore = "\t"
+# ------------------------------------------------------------
+# Construcción y ejecución del lexer
+# ------------------------------------------------------------
 
 # Construir el lexer
 lexer = lex.lex()
-
-
 lexer.input(programaPrueba)
 
-# Tokenize
+print("Análisis léxico del programa de prueba:")
+print("=======================================")
+print(programaPrueba)
+print("=======================================\n")
+
+# Separar tokens
 while True:
-    tok = lexer.token()
-    if not tok:
-        break  # No more input
-    print(tok)
+    token = lexer.token()
+    if not token:
+        break
+    print(token)

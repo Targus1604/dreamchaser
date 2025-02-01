@@ -9,22 +9,23 @@ def preprocesar_codigo(codigoFuente):
     lexer.input(codigoFuente)
 
     while True:
-        tok = lexer.token()
-        if not tok:
+        token = lexer.token()
+        if not token:
             break
-        if tok.type == "IMPORT":
+        if token.type == "IMPORTAR":
             # Leer el contenido del archivo importado
             resultado.append(
-                f"!importando: {tok.value.split('"')[1]}",
+                f"!importando: {token.value.split("'")[1]}",
             )
-        elif tok.type == "COMENTARIO":
+        elif token.type == "COMENTARIO":
             continue  # Ignorar comentarios
-        elif tok.type == "INDENTACION":
+        elif token.type == "INDENTACION":
             resultado.append("  ")
+        elif token.type == "ESPACIO":
+            resultado.append(" ")
         else:
-            resultado.append(tok.value)
+            resultado.append(token.value)
 
-    print("resultado", resultado)
     codigo_preprocesado = "".join(resultado)
     # Reemplazar múltiples saltos de línea consecutivos con un solo salto de línea
     codigo_preprocesado = re.sub(r"\n\s*\n", "\n", codigo_preprocesado)
