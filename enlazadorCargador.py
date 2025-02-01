@@ -32,8 +32,11 @@ def enlazador_cargador(codigo_entrada, direccion_base=0x00000):
                 "Se ha excedido el tamaño de la memoria para la siguiente instrucción",
                 instr,
             )
-        # Asumiendo que las direcciones empiezan desde 0
-        if instr in operaciones_memoria:
+        instruccion_corta = instr[:18]
+        instruccion_salto = instr[:21]
+        #  !!! Asumiendo que las direcciones empiezan desde 0, debe ser ASI PARA UN
+        # CORRECTO FUNCIONAMIENTO
+        if instruccion_corta or instruccion_salto in operaciones_memoria:
             direccion_actual = direccion
             # Últimos 10 bits como dirección relativa
             direccion_relativa_binaria = int(instr[-10:], 2)
