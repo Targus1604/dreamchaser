@@ -136,7 +136,6 @@ def t_CONST(t):
         t.lexer.skip(1)
         return
     constantes[nombre] = valor
-    print(f"constantes: {constantes}")
     return t
 
 
