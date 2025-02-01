@@ -1,5 +1,5 @@
 import src.ply.lex as lex
-from utils.programas import programaPrueba  # Importa string de un programa prueba
+from utils.programas import programaPrueba3  # Importa string de un programa prueba
 
 # ------------------------------------------------------------
 # DEFINICIONES REGULARES Y EXTENSIONES REGULARES
@@ -18,7 +18,7 @@ identificador = letra + r"(" + letra + r"|" + digito + r")*"
 
 numero_flotante_opcional = (
     digito
-    + r"("
+    + r"+("
     + digito_parte_flotante
     + r")?"
     + r"("
@@ -160,10 +160,15 @@ def t_INDENTACION(t):
 def t_NUEVA_LINEA(t):
     r"\n+"
     t.lexer.lineno += len(t.value)
+    t.value = "\n"
     return t
 
 
-t_ESPACIO = r"\s"
+# Regla para espacios
+def t_ESPACIO(t):
+    r"\s+"
+    t.value = " "
+    return t
 
 
 # Regla para manejar errores
@@ -178,11 +183,11 @@ def t_error(t):
 
 # Construir el lexer
 lexer = lex.lex()
-lexer.input(programaPrueba)
+lexer.input(programaPrueba3)
 
 print("Análisis léxico del programa de prueba:")
 print("=======================================")
-print(programaPrueba)
+print(programaPrueba3)
 print("=======================================\n")
 
 # Separar tokens
