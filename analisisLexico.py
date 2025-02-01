@@ -1,5 +1,5 @@
 import src.ply.lex as lex
-from utils.programas import programaPrueba3  # Importa string de un programa prueba
+from utils.programas import programaPrueba  # Importa string de un programa prueba
 
 # ------------------------------------------------------------
 # DEFINICIONES REGULARES Y EXTENSIONES REGULARES
@@ -11,7 +11,7 @@ digito_parte_flotante = r"\." + digito + r"+"
 digito_parte_exponente = r"[eE][+-]?" + digito + r"+"
 
 # Letras
-letra = r"[a-zA-Z_]"
+letra = r"[a-zA-ZáéíóúÁÉÍÓÚ_]"
 string = r"\'.*?\'"
 
 # Extensiones compuestas
@@ -129,6 +129,12 @@ def t_CONST(t):
     nombre = nombre.strip()
     valor = valor.strip()
     # Agregar la constante al diccionario
+    global constantes
+    # Verificar si la constante ya existe
+    if nombre in constantes:
+        print(f"Error: la constante '{nombre}' ya ha sido declarada")
+        t.lexer.skip(1)
+        return
     constantes[nombre] = valor
     print(f"constantes: {constantes}")
     return t
@@ -175,6 +181,9 @@ def t_ID(t):
     t.type = palabrasReservadas.get(
         t.value, "ID"
     )  # Verificar si es una palabra reservada
+    # verificar si esta en el diccionario de constantes y reemplazar
+    if t.value in constantes:
+        t.value = constantes[t.value]
     return t
 
 
@@ -218,16 +227,18 @@ def t_error(t):
 
 # Construir el lexer
 lexer = lex.lex()
-lexer.input(programaPrueba3)
 
-print("Análisis léxico del programa de prueba:")
-print("=======================================")
-print(programaPrueba3)
-print("=======================================\n")
+# Ejecutar el lexer
+# lexer.input(programaPrueba)
 
-# Separar tokens
-while True:
-    token = lexer.token()
-    if not token:
-        break
-    print(token)
+# print("Análisis léxico del programa de prueba:")
+# print("=======================================")
+# print(programaPrueba)
+# print("=======================================\n")
+
+# # Separar tokens
+# while True:
+#     token = lexer.token()
+#     if not token:
+#         break
+#     print(token)

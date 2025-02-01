@@ -3,7 +3,7 @@ importar 'libreria.txt'
 
 const PI 3.141592654
 const E 2.718281828
-const MATERIA "LENGUAJES DE PROGRAMACIÓN"
+const MATERIA 'LENGUAJES DE PROGRAMACIÓN'
 
 # Definición de variables
 a = 10
@@ -41,6 +41,7 @@ funcion calcular_area(radio)
 
 # Llamada a la función
 area = calcular_area(5)
+materia2 = MATERIA
 
 # Comentario de prueba
 # Este es un comentario que debe ser ignorado por el lexer
@@ -67,6 +68,7 @@ funcion suma(a, b)
 programaPrueba3 = """
 const PI 3.141592654
 const MATERIA 'LENGUAJES DE PROGRAMACIÓN'
+const MATERIA 'REPETIDA'
 a  = 10
 b = 20
     suma = a + b
