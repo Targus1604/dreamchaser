@@ -1,21 +1,53 @@
-import ply.lex as lex
+import src.ply.lex as lex
 from utils.programas import programaPrueba  # Importa string de un programa prueba
 
 # ------------------------------------------------------------
-# Definición de tokens
+# DEFINICIONES REGULARES Y EXTENSIONES REGULARES
+# ------------------------------------------------------------
+
+# Números
+digito = r"[0-9]"
+digito_parte_flotante = r"\." + digito + r"+"
+digito_parte_exponente = r"[eE][+-]?" + digito + r"+"
+
+# Letras
+letra = r"[a-zA-Z_]"
+
+# Extensiones compuestas
+identificador = letra + r"(" + letra + r"|" + digito + r")*"
+
+numero_flotante_opcional = (
+    digito
+    + r"("
+    + digito_parte_flotante
+    + r")?"
+    + r"("
+    + digito_parte_exponente
+    + r")?"
+)
+
+
+# ------------------------------------------------------------
+# DEFINICIÓN DE TOKENS
 # ------------------------------------------------------------
 
 # Palabras reservadas
 palabrasReservadas = {
+    # Estructuras de control
     "si": "SI",
     "sino": "SINO",
+    "mientras": "MIENTRAS",
+    "funcion": "FUNCION",
+    "para": "PARA",
+    # Valores de verdad
     "verdadero": "VERDADERO",
     "falso": "FALSO",
+    # Operadores lógicos
+    "y": "Y",
+    "o": "O",
+    "no": "NO",
+    # Otros
     "const": "CONST",
-    "mientras": "MIENTRAS",
-    "hacer": "HACER",
-    "para": "PARA",
-    "funcion": "FUNCION",
     "retornar": "RETORNAR",
     "importar": "IMPORTAR",
 }
@@ -24,10 +56,6 @@ palabrasReservadas = {
 tokens = (
     # Palabras reservadas
     *palabrasReservadas.values(),
-    # Operadores lógicos
-    "Y",
-    "O",
-    "NO",
     # Operadores relacionales
     "IGUALDAD",
     "DIFERENTE",
@@ -60,52 +88,50 @@ tokens = (
 )
 
 # ------------------------------------------------------------
-# Definiciones regulares y extensiones regulares
+# REGLAS PARA RECONOCER TOKENS
 # ------------------------------------------------------------
 
-# Numeros
-digito = r"[0-9]"
-digito_parte_flotante = r"\." + digito + r"+"
-digito_parte_exponente = r"[eE][+-]?" + digito + r"+"
 
-# Letras
-letra = r"[a-zA-Z_]"
-
-# Extensiones compuestas
-identificador = letra + r"(" + letra + r"|" + digito + r")*"
-
-numero_flotante_opcional = (
-    digito
-    + r"("
-    + digito_parte_flotante
-    + r")?"
-    + r"("
-    + digito_parte_exponente
-    + r")?"
-)
-
-# ------------------------------------------------------------
-# Reglas para reconocer tokens
-# ------------------------------------------------------------
-
-# Tokens a ignorar
-t_ignore = "\t"  # Ignorar tabulaciones
-t_ignore_COMENTARIO = r"\#.*"
-
-
+# Palabras reservadas
 # Regla para importar librerías
 def t_IMPORTAR(t):
     r"importar\s+\'.*?\'"
     return t
 
 
-# Reglas de expresiones regulares para tokens simples
+# Operadores relacionales
+t_IGUALDAD = r"=="
+t_DIFERENTE = r"!="
+t_MAYOR = r">"
+t_MENOR = r"<"
+t_MAYOR_IGUAL = r">="
+t_MENOR_IGUAL = r"<="
+
+# Operadores aritméticos
 t_SUMA = r"\+"
 t_RESTA = r"-"
 t_MULTIPLICACION = r"\*"
 t_DIVISION = r"/"
+t_DIVISION_ENTERA = r"//"
+
+# Asignación
 t_ASIGNACION = r"="
+
+# Delimitadores
+t_PARENTESIS_IZQUIERDO = r"\("
+t_PARENTESIS_DERECHO = r"\)"
+
+# Literales e identificadores
+
+
+# Regla para números con flotante y notacion científica opcionales
+@lex.TOKEN(numero_flotante_opcional)
+def t_NUMERO(t):
+    return t
+
+
 t_STRING = r"\'.*?\'"
+t_BOOLEANO = r"verdadero|falso"
 
 
 # Regla para identificadores y palabras reservadas
@@ -117,9 +143,11 @@ def t_ID(t):
     return t
 
 
-@lex.TOKEN(numero_flotante_opcional)
-def t_NUMERO(t):
-    return t
+# Comentarios
+t_ignore_COMENTARIO = r"\#.*"
+
+# Espacios y tabulaciones
+t_ignore = "\t"  # Ignorar tabulaciones
 
 
 # Regla para indentación (4 espacios en blanco)
@@ -145,7 +173,7 @@ def t_error(t):
 
 
 # ------------------------------------------------------------
-# Construcción y ejecución del lexer
+# CONSTRUCCIÓN Y EJECUCIÓN DEL LEXER
 # ------------------------------------------------------------
 
 # Construir el lexer
