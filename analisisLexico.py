@@ -12,6 +12,7 @@ digito_parte_exponente = r"[eE][+-]?" + digito + r"+"
 
 # Letras
 letra = r"[a-zA-Z_]"
+string = r"\'.*?\'"
 
 # Extensiones compuestas
 identificador = letra + r"(" + letra + r"|" + digito + r")*"
@@ -35,7 +36,7 @@ constante = (
     + r"("
     + numero_flotante_opcional
     + r"|"
-    + letra
+    + string
     + r"+)"
 )
 
@@ -121,9 +122,9 @@ def t_IMPORTAR(t):
 # Regla para las constantes
 @lex.TOKEN(constante)
 def t_CONST(t):
-    print(f"t.value: {t.value}")
     # Separar el nombre de la constante y su valor
-    const, nombre, valor = t.value.split(" ")
+    parts = t.value.split(maxsplit=2)
+    const, nombre, valor = parts[0], parts[1], parts[2]
     # Eliminar espacios en blanco
     nombre = nombre.strip()
     valor = valor.strip()
@@ -164,7 +165,7 @@ def t_NUMERO(t):
     return t
 
 
-t_STRING = r"\'.*?\'"
+t_STRING = string
 t_BOOLEANO = r"verdadero|falso"
 
 
