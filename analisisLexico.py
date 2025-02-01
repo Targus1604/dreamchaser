@@ -12,7 +12,6 @@ digito_parte_exponente = r"[eE][+-]?" + digito + r"+"
 
 # Letras
 letra = r"[a-zA-Z_]"
-letra_mayuscula = r"[A-Z]"
 
 # Extensiones compuestas
 identificador = letra + r"(" + letra + r"|" + digito + r")*"
@@ -31,14 +30,14 @@ numero_flotante_opcional = (
 # Declaracion de constantes
 constante = (
     r"const\s*"
-    + letra_mayuscula
-    + "+\s*=\s*("
+    + identificador
+    + r"\s*"
+    + r"("
     + numero_flotante_opcional
     + r"|"
     + letra
     + r"+)"
 )
-
 
 # ------------------------------------------------------------
 # DEFINICIÓN DE TOKENS
@@ -122,12 +121,11 @@ def t_IMPORTAR(t):
 # Regla para las constantes
 @lex.TOKEN(constante)
 def t_CONST(t):
+    print(f"t.value: {t.value}")
     # Separar el nombre de la constante y su valor
-    nombre, valor = t.value.split("=")
+    const, nombre, valor = t.value.split(" ")
     # Eliminar espacios en blanco
     nombre = nombre.strip()
-    # eliminar 'const' y espacio del nombre
-    nombre = nombre[5:].strip()
     valor = valor.strip()
     # Agregar la constante al diccionario
     constantes[nombre] = valor

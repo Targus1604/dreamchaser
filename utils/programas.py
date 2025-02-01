@@ -1,8 +1,8 @@
 programaPrueba = """
 importar 'libreria.txt'
 
-const PI = 3.141592654
-const E = 2.718281828
+const PI 3.141592654
+const E 2.718281828
 
 # Definición de variables
 a = 10
@@ -47,7 +47,7 @@ area = calcular_area(5)
 
 programaPrueba2 = """
 importar 'libreria.txt'
-const PI = 3.141592654
+const PI 3.141592654
 
 const E = 2.718281828
 a_2 = 2.41e-2
@@ -64,7 +64,7 @@ funcion suma(a, b)
 """
 
 programaPrueba3 = """
-const PI = 3.141592654
+const PI 3.141592654
 a  = 10
 b = 20
     suma = a + b
