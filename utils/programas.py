@@ -1,9 +1,11 @@
 programaPrueba = """
-importar 'libreria.txt'
+# Importando librerías precompiladas
+importar 'raizCuadrada'
+importar 'potencia'
 
 const PI 3.141592654
 const E 2.718281828
-const MATERIA "LENGUAJES DE PROGRAMACIÓN"
+const MATERIA 'LENGUAJES DE PROGRAMACIÓN'
 
 # Definición de variables
 a = 10
@@ -17,15 +19,15 @@ suma = a + b
 resta = a - b
 multiplicacion = a * b
 division = a / b
-division_entera = a // b
+divisionEntera = a // b
 
 # Operadores relacionales
 igual = a == b
 diferente = a != b
 mayor = a > b
 menor = a < b
-mayor_igual = a >= b
-menor_igual = a <= b
+mayorIgual = a >= b
+menorIgual = a <= b
 
 # Estructuras de control
 si a > b
@@ -36,11 +38,12 @@ sino
 mientras a < 100
     a = a + 1
 
-funcion calcular_area(radio)
+funcion calcularArea(radio)
     retornar PI * radio * radio
 
 # Llamada a la función
-area = calcular_area(5)
+area = calcularArea(5)
+materia2 = MATERIA
 
 # Comentario de prueba
 # Este es un comentario que debe ser ignorado por el lexer
@@ -67,6 +70,7 @@ funcion suma(a, b)
 programaPrueba3 = """
 const PI 3.141592654
 const MATERIA 'LENGUAJES DE PROGRAMACIÓN'
+const MATERIA 'REPETIDA'
 a  = 10
 b = 20
     suma = a + b

@@ -1,6 +1,7 @@
 import re
 from analisisLexico import lexer
 from utils.programas import programaPrueba
+from utils.funcionesPrecompiladas import funcionesPrecompiladas
 
 
 # Función para preprocesar el código fuente
@@ -12,10 +13,16 @@ def preprocesar_codigo(codigoFuente):
         if not token:
             break
         if token.type == "IMPORTAR":
-            # Leer el contenido del archivo importado
-            resultado.append(
-                f"!importando: {token.value.split("'")[1]}",
-            )
+            nombreLibreria = token.value.split("'")[1]
+            if nombreLibreria in funcionesPrecompiladas:
+                posicionMemoria = funcionesPrecompiladas.get(nombreLibreria)
+                # Leer el contenido del archivo importado
+                resultado.append(
+                    f"!EJECUTAR_POSICION:{posicionMemoria}\n",
+                )
+
+            else:
+                print(f"Error: la función '{nombreLibreria}' no está precompilada")
         else:
             resultado.append(token.value)
 
