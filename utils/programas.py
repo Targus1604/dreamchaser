@@ -64,6 +64,7 @@ funcion suma(a, b)
 """
 
 programaPrueba3 = """
+const PI = 3.141592654
 a  = 10
 b = 20
     suma = a + b
