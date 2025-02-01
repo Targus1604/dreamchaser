@@ -1,4 +1,5 @@
 from enlazadorCargador import enlazador_cargador
+from utils.programas import codigo_entrada_enlazador
 
 """
 En esta clase se simulará DREAMCHASER teniendo los módulos construidos
@@ -56,19 +57,6 @@ class Computadora:
             print("No hay instrucciones en memoria")
 
 
-# Entrada código máquina (32 bits por instrucción)
-codigo_entrada = [
-    "00000000000000010100000000100000",
-    "00000000000000010100100000000000",
-    "00000000000000010101000000000001",
-    "00000000000000000000100000000111",
-    "00000000000000000000000101001000",
-    "00000000000000000000000110000010",
-    "00000000000000000011100000000011",
-    "00000000000000011000100000001001",
-    "00000000000000000000000000000000",
-]
-
 dreamChaser = Computadora()
-dreamChaser.cargar_codigo(codigo_entrada, direccion_de_inicio=16)
+dreamChaser.cargar_codigo(codigo_entrada_enlazador, direccion_de_inicio=0)
 dreamChaser.mostrar_memoria()
