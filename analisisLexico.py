@@ -69,6 +69,8 @@ palabrasReservadas = {
 tokens = (
     # Palabras reservadas
     *palabrasReservadas.values(),
+    # Ejecutar librerias precompiladas
+    "EJECUTAR_POSICION",
     # Operadores relacionales
     "IGUALDAD",
     "DIFERENTE",
@@ -119,6 +121,13 @@ def t_IMPORTAR(t):
     return t
 
 
+# Regla para ejecutar librerías precompiladas
+def t_EJECUTAR_POSICION(t):
+    r"!EJECUTAR_POSICION:[0-9]+"
+    t.value = int(t.value.split(":")[1])
+    return t
+
+
 # Regla para las constantes
 @lex.TOKEN(constante)
 def t_CONST(t):
@@ -136,7 +145,7 @@ def t_CONST(t):
         t.lexer.skip(1)
         return
     constantes[nombre] = valor
-    return t
+    pass
 
 
 # Operadores relacionales

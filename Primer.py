@@ -125,6 +125,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if not token:
                 break  # Terminar cuando no hay más tokens
 
+            if token.type == "ESPACIO":
+                continue
+
             # Crear fila con los atributos del token
             row = [
                 QStandardItem(token.type),
