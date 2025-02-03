@@ -1,14 +1,6 @@
 from enlazadorCargador import enlazador_cargador
 from utils.programas import codigo_entrada_enlazador
 
-"""
-En esta clase se simulará DREAMCHASER teniendo los módulos construidos
--Preprocesador
--Analizador léxico
--Ensamblador
--Enlazador Cargador
-"""
-
 
 class Computadora:
     def __init__(self, tamano_memoria=2048):
@@ -48,10 +40,11 @@ class Computadora:
     # Muestra únicamente las celdas de memoria con instrucciones (usar self.memoria para un paneo completo)
     def mostrar_memoria(self):
         memoria_ocupada = 0
+        print("===============CARGADO EN MEMORIA================")
         for direccion, instr in enumerate(self.memoria):
             if instr != 0:
                 memoria_ocupada += 1
-                # La dirección es mostrada en exadecimal
+                # La dirección es mostrada en hexadecimal
                 print(f"{direccion:04X}: {instr}")
         if memoria_ocupada == 0:
             print("No hay instrucciones en memoria")
