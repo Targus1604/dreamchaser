@@ -32,6 +32,3 @@ def preprocesar_codigo(codigoFuente):
 
     return codigo_preprocesado
 
-
-codigo_preprocesado = preprocesar_codigo(programaPrueba)
-print(codigo_preprocesado)

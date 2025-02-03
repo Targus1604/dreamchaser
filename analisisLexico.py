@@ -230,11 +230,6 @@ lexer = lex.lex()
 # Ejecutar el lexer
 # lexer.input(programaPrueba)
 
-# print("Análisis léxico del programa de prueba:")
-# print("=======================================")
-# print(programaPrueba)
-# print("=======================================\n")
-
 # # Separar tokens
 # while True:
 #     token = lexer.token()

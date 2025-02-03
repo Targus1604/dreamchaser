@@ -111,25 +111,17 @@ def ensamblador(lista_instrucciones):
 
 
 # Prueba del ensamblador
-codigo_entrada = [
-    "SALTAR 0",
-    "CARGAR R4 2",
-    "CARGAR R5 4",
-    "ALMACENAR R6 32",
-    "ALMACENAR R7 40",
-    "ALMACENAR R2 1",
-    "SALTARSICERO 7",
-    "SALTARSICARRY 72",
-    "SALTARSIPAR 130",
-    "SALTAR 3",
-    "ALMACENAR R5 9",
-    "SALTAR 0",
-]
-
-# Generar el código binario
-codigo_entrada_enlazador = ensamblador(codigo_entrada)
-
-# Mostrar el resultado esperado
-print("Codigo de entrada para el enlazador-cargador:")
-for instr in codigo_entrada_enlazador:
-    print(instr)
+# codigo_entrada = [
+#     "SALTAR 0",
+#     "CARGAR R4 2",
+#     "CARGAR R5 4",
+#     "ALMACENAR R6 32",
+#     "ALMACENAR R7 40",
+#     "ALMACENAR R2 1",
+#     "SALTARSICERO 7",
+#     "SALTARSICARRY 72",
+#     "SALTARSIPAR 130",
+#     "SALTAR 3",
+#     "ALMACENAR R5 9",
+#     "SALTAR 0",
+# ]

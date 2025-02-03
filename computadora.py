@@ -36,20 +36,18 @@ class Computadora:
         mapa_memoria = enlazador_cargador(codigo_entrada, direccion_de_inicio)
         for direccion, instr in mapa_memoria.items():
             self.memoria[direccion] = instr
+        return self.memoria
 
-    # Muestra únicamente las celdas de memoria con instrucciones (usar self.memoria para un paneo completo)
     def mostrar_memoria(self):
-        memoria_ocupada = 0
-        print("===============CARGADO EN MEMORIA================")
+        memoria_ocupada = []
+
         for direccion, instr in enumerate(self.memoria):
             if instr != 0:
-                memoria_ocupada += 1
-                # La dirección es mostrada en hexadecimal
-                print(f"{direccion:04X}: {instr}")
-        if memoria_ocupada == 0:
-            print("No hay instrucciones en memoria")
+                memoria_ocupada.append(
+                    (f"{direccion}", instr)
+                )  # Dirección en Hex, valor binario
 
+        if not memoria_ocupada:
+            return [("No hay instrucciones en memoria", "")]  # Mensaje en la tabla
 
-dreamChaser = Computadora()
-dreamChaser.cargar_codigo(codigo_entrada_enlazador, direccion_de_inicio=3)
-dreamChaser.mostrar_memoria()
+        return memoria_ocupada  # Retorna la lista de tuplas
