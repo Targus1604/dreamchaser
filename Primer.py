@@ -108,7 +108,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def analizar_codigo(self):
         # Obtener el texto desde QPlainTextEdit (Editor)
-        texto = self.Editor.toPlainText()
+        texto = self.Preprocesado.toPlainText()
 
         # Pasar el texto al lexer
         lexer.input(texto)

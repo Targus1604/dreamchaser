@@ -29,6 +29,7 @@ def preprocesar_codigo(codigoFuente):
     codigo_preprocesado = "".join(resultado)
     # Reemplazar múltiples saltos de línea consecutivos con un solo salto de línea
     codigo_preprocesado = re.sub(r"\n\s*\n", "\n", codigo_preprocesado)
+    # Eliminar espacios en blanco al inicio y al final del archivo
+    codigo_preprocesado = codigo_preprocesado.strip()
 
     return codigo_preprocesado
-
