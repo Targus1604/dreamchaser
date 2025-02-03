@@ -130,6 +130,6 @@ codigo_entrada = [
 codigo_entrada_enlazador = ensamblador(codigo_entrada)
 
 # Mostrar el resultado esperado
-print("Código de entrada para el enlazador-cargador:")
+print("Codigo de entrada para el enlazador-cargador:")
 for instr in codigo_entrada_enlazador:
     print(instr)
