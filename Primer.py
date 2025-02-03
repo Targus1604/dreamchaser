@@ -174,8 +174,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Asignar modelo a la tabla
         self.SalidaEnlazarCargar.setModel(model)
         # Ajustar tamaño de las columnas
-        self.SalidaEnlazarCargar.setColumnWidth(0, 80)  # Columna "Dirección"
-        self.SalidaEnlazarCargar.setColumnWidth(1, 300)  # Columna "Binario"
+        self.SalidaEnlazarCargar.setColumnWidth(0, 350)  # Columna "Dirección"
 
 
 app = QtWidgets.QApplication(sys.argv)

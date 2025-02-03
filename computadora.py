@@ -5,7 +5,7 @@ from utils.programas import codigo_entrada_enlazador
 class Computadora:
     def __init__(self, tamano_memoria=2048):
         # Simula la memoria (cada celda de memoria almacena un entero de 32 bits)
-        self.memoria = [0] * tamano_memoria
+        self.memoria = ["0" * 32 for _ in range(tamano_memoria)]
         self.registros = [0] * 8
 
         """---------------------------------------------------------------------------------
