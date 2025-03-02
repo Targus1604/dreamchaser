@@ -49,25 +49,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actualizar_registros()
 
         # Tabla de INDICADORES ALU
-        self.Tabla_Alu.setRowCount(3)  # C, P, N
+        self.Tabla_Alu.setRowCount(5)  # C, Z, N, P, D
         self.Tabla_Alu.setColumnCount(2)  # Binario y Decimal
-        indicadores = [("C", "00", "0"), ("P", "00", "0"), ("N", "00", "0")]
-
-        for fila, (nombre, binario, decimal) in enumerate(indicadores):
-            self.Tabla_Alu.setVerticalHeaderItem(fila, QTableWidgetItem(nombre))
-            self.Tabla_Alu.setItem(fila, 0, QTableWidgetItem(binario))
-            self.Tabla_Alu.setItem(fila, 1, QTableWidgetItem(decimal))
+        self.actualizar_indicadores_alu()
 
         # Tabla de UNIDAD DE CONTROL
-        self.Tabla_Unidad_Control.setRowCount(2)  # IC, CP
+        self.Tabla_Unidad_Control.setRowCount(1)  # IC, CP
         self.Tabla_Unidad_Control.setColumnCount(1)  # Binario
-        control = [("IC", "00"), ("CP", "00")]
-
-        for fila, (nombre, binario) in enumerate(control):
-            self.Tabla_Unidad_Control.setVerticalHeaderItem(
-                fila, QTableWidgetItem(nombre)
-            )
-            self.Tabla_Unidad_Control.setItem(fila, 0, QTableWidgetItem(binario))
+        self.actualizar_unidad_control()
 
         # Tabla RAM
         filas = self.SalidaEnlazarCargar.rowCount()  # Obtener número de filas
@@ -92,6 +81,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Tabla_Alu.resizeColumnsToContents()
         self.Tabla_Unidad_Control.resizeColumnsToContents()
 
+    def actualizar_unidad_control(self):
+        nombres_control = ["PC"]
+        valores_control = [
+            self.computadora.pc,
+        ]
+
+        control = [
+            (
+                nombre,
+                str(valor),
+                str(valor),
+            )
+            for nombre, valor in zip(nombres_control, valores_control)
+        ]
+
+        for fila, (nombre, binario, decimal) in enumerate(control):
+            self.Tabla_Unidad_Control.setVerticalHeaderItem(
+                fila, QTableWidgetItem(nombre)
+            )
+            self.Tabla_Unidad_Control.setItem(fila, 0, QTableWidgetItem(binario))
+
     def actualizar_registros(self):
         nombres_registros = ["A", "B", "C", "D", "E", "F", "G", "H"]
         registros = [
@@ -107,6 +117,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.Tabla_Registros.setVerticalHeaderItem(fila, QTableWidgetItem(registro))
             self.Tabla_Registros.setItem(fila, 0, QTableWidgetItem(binario))
             self.Tabla_Registros.setItem(fila, 1, QTableWidgetItem(decimal))
+
+    def actualizar_indicadores_alu(self):
+        nombres_indicadores = ["C", "Z", "N", "P", "D"]
+        valores_indicadores = [
+            self.computadora.bandera_carry,
+            self.computadora.bandera_zero,
+            self.computadora.bandera_neg,
+            self.computadora.bandera_par,
+            self.computadora.bandera_desb,
+        ]
+
+        indicadores = [
+            (
+                nombre,
+                format(valor, "03b"),
+                str(valor),
+            )
+            for nombre, valor in zip(nombres_indicadores, valores_indicadores)
+        ]
+
+        for fila, (nombre, binario, decimal) in enumerate(indicadores):
+            self.Tabla_Alu.setVerticalHeaderItem(fila, QTableWidgetItem(nombre))
+            self.Tabla_Alu.setItem(fila, 0, QTableWidgetItem(binario))
+            self.Tabla_Alu.setItem(fila, 1, QTableWidgetItem(decimal))
 
     def open_file_dialog(self):
         # Abrir explorador de archivos y filtrar solo archivos .txt
