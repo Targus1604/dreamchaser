@@ -29,6 +29,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Ensamblar.clicked.connect(self.ensamblar)
         self.Enlazar.clicked.connect(self.enlazar_cargar)
         self.Reiniciar.clicked.connect(self.inicializar)
+        self.Sig_instruccion.clicked.connect(self.siguiente_instruccion)
 
     def inicializar(self):
         self.ResultadoEnsamblador.clear()
@@ -141,6 +142,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.Tabla_Alu.setVerticalHeaderItem(fila, QTableWidgetItem(nombre))
             self.Tabla_Alu.setItem(fila, 0, QTableWidgetItem(binario))
             self.Tabla_Alu.setItem(fila, 1, QTableWidgetItem(decimal))
+
+    def siguiente_instruccion(self):
+        self.computadora.ejecutar_instruccion()
+        self.actualizar_unidad_control()
+        self.actualizar_registros()
+        self.actualizar_indicadores_alu()
 
     def open_file_dialog(self):
         # Abrir explorador de archivos y filtrar solo archivos .txt
@@ -263,12 +270,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Obtener la dirección de inicio desde QSpinBox
         direccion_inicio = self.Localizacion.value()
 
-        # Crear instancia de Computadora
-        compu = Computadora()
-        compu.cargar_codigo(codigo_formateado, direccion_de_inicio=direccion_inicio)
+        self.computadora.cargar_codigo(
+            codigo_formateado, direccion_de_inicio=direccion_inicio
+        )
 
         # Obtener memoria cargada
-        memoria = compu.mostrar_memoria()
+        memoria = self.computadora.mostrar_memoria()
         # Limpiar la tabla antes de agregar nuevos datos
         # self.SalidaEnlazarCargar.clearContents()
         # self.SalidaEnlazarCargar.setRowCount(0)
@@ -301,5 +308,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 app = QtWidgets.QApplication(sys.argv)
 
 window = MainWindow()
+window.computadora.interfaz = window
 window.show()
 app.exec()

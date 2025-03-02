@@ -23,6 +23,7 @@ class Computadora:
         self.bandera_desb = 0
         # Puntero de instrucción (PC)
         self.pc = 0
+        self.interfaz = None
 
         """----------------------------------------------------------------------------------------------------
 
@@ -97,6 +98,23 @@ class Computadora:
 
         return memoria_ocupada  # Retorna la lista de tuplas
 
+    def ejecutar_instruccion(self):
+        if self.pc < len(self.memoria):
+            instruccion = int(self.memoria[self.pc], 2)
+            print(f"Ejecutando instrucción en PC={self.pc}: {self.memoria[self.pc]}")
+            if instruccion == 0b00000000000000000000000000000000:
+                print("Ejecución finalizada.")
+            else:
+                self.decodificar_y_ejecutar(instruccion)
+                self.pc += 1
+                self.actualizar_interfaz()
+
+    def actualizar_interfaz(self):
+        if self.interfaz:
+            self.interfaz.actualizar_registros()
+            self.interfaz.actualizar_indicadores_alu()
+            self.interfaz.actualizar_unidad_control()
+
     def ejecutar(self, direccion_inicio=0):
         """Ejecuta las instrucciones cargadas en la memoria"""
         self.pc = direccion_inicio
@@ -110,6 +128,8 @@ class Computadora:
             else:
                 self.decodificar_y_ejecutar(instruccion)  # Ejecutar la instrucción
                 self.pc += 1  # Incrementar el puntero de instrucción hasta que se ejecute la instrucción de parar
+                print(f"PC incrementado a: {self.pc}")
+                self.actualizar_interfaz()
 
     """
     ---------------------------------------------------------------------------------------------------------
@@ -130,6 +150,11 @@ class Computadora:
         reg1 = (instruccion & 0x00003800) >> 11  # Registro 1
         direccion = instruccion & 0x000007FF  # direccion de memoria
 
+        print(f"Decodificando instrucción: {bin(instruccion)}")
+        print(
+            f"Opcode: {bin(opcode)}, Opcode1: {bin(opcode1)}, Opcode2: {bin(opcode2)}, Opcode3: {bin(opcode3)}"
+        )
+        print(f"Registro 1: {reg1}, Dirección: {direccion}")
         # Llamar la función correspondiente al opcode, si existe
         if opcode in self.operaciones_registro_memoria:
             self.operaciones_registro_memoria[opcode](reg1, direccion)
