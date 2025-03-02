@@ -1,13 +1,15 @@
 import sys
+
 from PyQt6 import QtWidgets, uic
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QStandardItem, QStandardItemModel
+from PyQt6.QtWidgets import QFileDialog
+
 from analisisLexico import lexer
-from preprocesador import preprocesar_codigo
+from computadora import Computadora
 from ensamblador import ensamblador
 from MainWindow import Ui_MainWindow
-from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtGui import QStandardItemModel, QStandardItem
-from PyQt6.QtCore import Qt
-from computadora import Computadora
+from preprocesador import preprocesar_codigo
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -158,7 +160,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Crear instancia de Computadora
         compu = Computadora()
-        memoria = compu.cargar_codigo(codigo_formateado, direccion_de_inicio=3)
+        memoria = compu.cargar_codigo(codigo_formateado)
 
         # Crear modelo para la tabla
         model = QStandardItemModel()

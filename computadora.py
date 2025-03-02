@@ -411,13 +411,16 @@ programa = [
 # Cargar datos iniciales en memoria, ojo estos datos deben agregarse
 # luego de los datos del programa para un programa con 3 instrucciones
 # estos datos iniciales se guardan desde la dirección 3 en adelante
-comp.memoria[512] = 128  # M[2] = 10
-comp.memoria[513] = 7  # M[5] = 0
+
+# Cargando datos en memoria directamente, HAY QUE TENER EN CUENTA CÓDIGO RELOCALIZABLE.
+comp.memoria[768] = "00000000000000000000000010000000"  # M[768] = 128
+comp.memoria[769] = "00000000000000000000000000000111"  # M[769] = 7
 direccion_inicio = 256
+
 
 # # Cargar el programa en memoria
 comp.cargar_codigo(programa, direccion_inicio)
-
+print(comp.mostrar_memoria())
 
 # # Ejecutar el programa
 comp.ejecutar(direccion_inicio)
