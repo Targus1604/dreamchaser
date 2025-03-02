@@ -97,6 +97,30 @@ class Computadora:
 
         return memoria_ocupada  # Retorna la lista de tuplas
 
+    def ejecutar(self, direccion_inicio=0):
+        """Ejecuta las instrucciones cargadas en la memoria"""
+        self.pc = direccion_inicio
+        while self.pc < len(self.memoria):  # Mientras haya instrucciones por ejecutar
+            instruccion = int(self.memoria[self.pc], 2)
+            if (
+                instruccion == 0b00000000000000000000000000000000
+            ):  # Código de operación 0 "PARAR"
+                print("Ejecución finalizada.")
+                break
+            else:
+                self.decodificar_y_ejecutar(instruccion)  # Ejecutar la instrucción
+                self.pc += 1  # Incrementar el puntero de instrucción hasta que se ejecute la instrucción de parar
+
+    """
+    ---------------------------------------------------------------------------------------------------------
+
+
+    FORMATO DE OPERACIONES Y ASIGNACIÓN DE OPCODE DREAMCHASER
+
+
+    ---------------------------------------------------------------------------------------------------------
+    """
+
     def decodificar_y_ejecutar(self, instruccion):
         """Carga y almacenamiento entre registro y memoria"""
         opcode = instruccion & 0xFFFFC000
@@ -131,11 +155,11 @@ class Computadora:
 
     def cargar(self, reg1, direccion):
         """CARGAR R1, M[valor]"""
-        self.registros[reg1] = self.memoria[direccion]
+        self.registros[reg1] = int(self.memoria[direccion], 2)
 
     def almacenar(self, reg1, direccion):
         """ALMACENAR R1, M[valor]"""
-        self.memoria[direccion] = self.registros[reg1]
+        self.memoria[direccion] = format(self.registros[reg1], "032b")
 
     """---------------------------------------------
     OPERACIONES ENTRE REGISTRO Y VALORES
@@ -315,6 +339,11 @@ class Computadora:
 
     def modulo(self, reg1, reg2):
         """MOD R1, R2"""
+        if self.registros[reg2] == 0:
+            print(
+                f"Error: División por cero en la operación MOD entre R{reg1} y R{reg2}"
+            )
+            return
         resultado = self.registros[reg1] % self.registros[reg2]
         self.bandera_carry = 1 if resultado > 0xFFFFFFFF else 0
         self.bandera_zero = 1 if resultado == 0 else 0
@@ -355,3 +384,43 @@ class Computadora:
         print("Memoria:", self.memoria[len(programa) : len(programa) + 16])
         print("------------------------------------------------------------\n")
         print()
+
+
+# A. Euclides
+# Crear una instancia de la computadora
+comp = Computadora()
+
+# Programa de prueba en formato binario (simple)
+# Formato: [opcode][reg1][reg2][valor_inmediato o dirección]
+programa = [
+    "00000000000000010000001000000000",  # Cargar      A,a CARGO 512
+    "00000000000000010000101000000001",  # Cargar      B,b CARGO 513
+    "00000000000000000000001001000010",  # bucle: Copiar A, C
+    "00000000000000000000000110010001",  # Restar      C,B
+    "00000000000000000000100100001010",  # SaltarSiCero fin
+    "00000000000000000001100100001000",  # SaltarSiNegativo menor
+    "00000000000000000000000110000001",  # Restar      A,B
+    "00000000000000000011100100000010",  # Saltar bucle
+    "00000000000000000000000110001000",  # menor: Restar B,A
+    "00000000000000000011100100000010",  # Saltar bucle
+    "00000000000000011000000000001100",  # Verdadero: Almacenar D,m GUARDO EN 12
+    "00000000000000000000000000000000",  # Parar
+]
+
+
+# Cargar datos iniciales en memoria, ojo estos datos deben agregarse
+# luego de los datos del programa para un programa con 3 instrucciones
+# estos datos iniciales se guardan desde la dirección 3 en adelante
+comp.memoria[512] = 128  # M[2] = 10
+comp.memoria[513] = 7  # M[5] = 0
+direccion_inicio = 256
+
+# # Cargar el programa en memoria
+comp.cargar_codigo(programa, direccion_inicio)
+
+
+# # Ejecutar el programa
+comp.ejecutar(direccion_inicio)
+
+# # Imprimir el estado final
+comp.imprimir_estado(direccion_inicio, programa)

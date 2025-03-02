@@ -37,7 +37,7 @@ def enlazador_cargador(codigo_entrada, direccion_base=0x00000):
         #  !!! Asumiendo que las direcciones empiezan desde 0, debe ser ASI PARA UN
         # CORRECTO FUNCIONAMIENTO
         if instruccion_corta or instruccion_salto in operaciones_memoria:
-            # Últimos 10 bits como dirección relativa
+            # Últimos 10 bits como dirección relativa, es la parte de memoria de la operacion
             direccion_relativa_binaria = int(instr[-10:], 2)
             direccion_absoluta = (
                 direccion_base + direccion_relativa_binaria
