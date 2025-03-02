@@ -12,9 +12,12 @@ from MainWindow import Ui_MainWindow
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+
     def __init__(self, *args, obj=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
+
+        self.computadora = Computadora()  # Crear la instancia de Computadora aquí
 
         self.inicializar()
 
@@ -41,17 +44,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.ResultadoEnsamblador.setPlainText(contenido)
 
         # Tabla de REGISTROS
-        self.Tabla_Registros.setRowCount(2)  # A y B
+        self.Tabla_Registros.setRowCount(8)  # A y B
         self.Tabla_Registros.setColumnCount(2)  # Binario y Decimal
-        registros = [
-            ("A", "00000000000000000000000000000000", "0"),
-            ("B", "00000000000000000000000000000000", "0"),
-        ]
-
-        for fila, (registro, binario, decimal) in enumerate(registros):
-            self.Tabla_Registros.setVerticalHeaderItem(fila, QTableWidgetItem(registro))
-            self.Tabla_Registros.setItem(fila, 0, QTableWidgetItem(binario))
-            self.Tabla_Registros.setItem(fila, 1, QTableWidgetItem(decimal))
+        self.actualizar_registros()
 
         # Tabla de INDICADORES ALU
         self.Tabla_Alu.setRowCount(3)  # C, P, N
@@ -96,6 +91,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Tabla_Registros.resizeColumnsToContents()
         self.Tabla_Alu.resizeColumnsToContents()
         self.Tabla_Unidad_Control.resizeColumnsToContents()
+
+    def actualizar_registros(self):
+        nombres_registros = ["A", "B", "C", "D", "E", "F", "G", "H"]
+        registros = [
+            (
+                nombre,
+                format(self.computadora.registros[i], "032b"),
+                str(self.computadora.registros[i]),
+            )
+            for i, nombre in enumerate(nombres_registros)
+        ]
+
+        for fila, (registro, binario, decimal) in enumerate(registros):
+            self.Tabla_Registros.setVerticalHeaderItem(fila, QTableWidgetItem(registro))
+            self.Tabla_Registros.setItem(fila, 0, QTableWidgetItem(binario))
+            self.Tabla_Registros.setItem(fila, 1, QTableWidgetItem(decimal))
 
     def open_file_dialog(self):
         # Abrir explorador de archivos y filtrar solo archivos .txt
