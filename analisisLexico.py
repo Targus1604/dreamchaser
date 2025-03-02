@@ -1,5 +1,5 @@
 import src.ply.lex as lex
-from utils.programas import programaPrueba  # Importa string de un programa prueba
+from utils.programas import programa_minimo  # Importa string de un programa prueba
 
 # ------------------------------------------------------------
 # DEFINICIONES REGULARES Y EXTENSIONES REGULARES
@@ -237,11 +237,11 @@ def t_error(t):
 lexer = lex.lex()
 
 # Ejecutar el lexer
-# lexer.input(programaPrueba)
+lexer.input(programa_minimo)
 
-# # Separar tokens
-# while True:
-#     token = lexer.token()
-#     if not token:
-#         break
-#     print(token)
+# Separar tokens
+while True:
+    token = lexer.token()
+    if not token:
+        break
+    print(token)
