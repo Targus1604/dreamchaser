@@ -150,7 +150,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def ensamblar(self):
         codigo = self.CodigoEnsamblador.toPlainText()
         codigo_formateado = codigo.splitlines()
-        codigo_ensamblado = "\n".join(ensamblador(codigo_formateado))
+        codigo_ensamblado = "\n".join(ensamblador(codigo_formateado)[0])
         self.ResultadoEnsamblador.setPlainText(codigo_ensamblado)
 
     def enlazar_cargar(self):

@@ -54,21 +54,3 @@ def enlazador_cargador(codigo_entrada, direccion_base=0x00000):
         direccion += 1
 
     return mapa_memoria
-
-
-enlazador_cargador(
-    codigo_entrada=[
-        "00000000000000010000001000000000",  # Cargar      A,a CARGO 512
-        "00000000000000010000101000000001",  # Cargar      B,b CARGO 513
-        "00000000000000000000001001000010",  # bucle: Copiar A, C
-        "00000000000000000000000110010001",  # Restar      C,B
-        "00000000000000000000100100001010",  # SaltarSiCero fin
-        "00000000000000000001100100001000",  # SaltarSiNegativo menor
-        "00000000000000000000000110000001",  # Restar      A,B
-        "00000000000000000011100100000010",  # Saltar bucle
-        "00000000000000000000000110001000",  # menor: Restar B,A
-        "00000000000000000011100100000010",  # Saltar bucle
-        "00000000000000011000000000001100",  # Verdadero: Almacenar D,m GUARDO EN 12
-        "00000000000000000000000000000000",  # Parar
-    ]
-)

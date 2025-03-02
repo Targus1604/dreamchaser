@@ -60,7 +60,6 @@ registros = {
 }
 
 
-# Recibe una instrucción y devuelve su representación en binario
 def traducir_instruccion(instruccion):
     if instruccion == "PARAR":
         return codigo_operaciones["PARAR"]
@@ -72,24 +71,27 @@ def traducir_instruccion(instruccion):
     opcode = codigo_operaciones[nombre_instruccion]
 
     # Determinar el resto de la instrucción
-    if (
-        nombre_instruccion in carga_memoria
-        or nombre_instruccion in carga_operacion_valor
-    ):
+    if nombre_instruccion in carga_memoria:
         if partes[1] not in registros:
             raise ValueError(f"Registro desconocido: {partes[1]}")
         registro = registros[partes[1]]
 
-        direccion_binaria = format(
-            int(partes[2]), "011b"
-        )  # Determinar la dirección de memoria de 11 bits (últimos 11 bits)
-
+        # Codificamos los últimos 11 bits como dirección relativa
+        direccion_binaria = format(int(partes[2]) & 0x3FF, "011b")  # Solo 10 bits
         return opcode + registro + direccion_binaria
 
-    elif nombre_instruccion.startswith("SALTAR"):
-        direccion_binaria = format(
-            int(partes[1]), "011b"
-        )  # Determinar la dirección de memoria de 11 bits (últimos 11 bits)
+    elif nombre_instruccion in carga_operacion_valor:
+        if partes[1] not in registros:
+            raise ValueError(f"Registro desconocido: {partes[1]}")
+        registro = registros[partes[1]]
+
+        # Para valores inmediatos, mantener 11 bits
+        valor_binario = format(int(partes[2]) & 0x7FF, "011b")  # 11 bits
+        return opcode + registro + valor_binario
+
+    elif nombre_instruccion in saltos:
+        # Codificamos los últimos 11 bits como dirección relativa
+        direccion_binaria = format(int(partes[1]) & 0x3FF, "011b")  # Solo 10 bits
         return opcode + direccion_binaria
 
     elif nombre_instruccion in operaciones_registros:
@@ -102,26 +104,96 @@ def traducir_instruccion(instruccion):
 
 
 def ensamblador(lista_instrucciones):
-    instrucciones_binarias = []
+    # Primera pasada: recolectar etiquetas
+    etiquetas = {}
+    instrucciones_limpias = []
+    contador_instrucciones = 0
 
-    for instruccion in lista_instrucciones:
-        instruccion_binaria = traducir_instruccion(instruccion)
-        instrucciones_binarias.append(instruccion_binaria)
-    return instrucciones_binarias
+    for i, linea in enumerate(lista_instrucciones):
+        # Si la línea contiene una etiqueta (termina con :)
+        if ":" in linea:
+            partes = linea.split(":", 1)
+            etiqueta = partes[0].strip()
+            # Se guarda de la siguiente manera {etiqueta: direccion}
+            etiquetas[etiqueta] = contador_instrucciones
+
+            # Si hay una instrucción después de la etiqueta se agrega a instrucciones limpias
+            if len(partes) > 1 and partes[1].strip():
+                instruccion = partes[1].strip()
+                instrucciones_limpias.append(instruccion)
+                contador_instrucciones += 1
+        else:
+            # En caso de no tener etiquetas simplemente se añade la instrucción
+            instrucciones_limpias.append(linea)
+            contador_instrucciones += 1
+
+    # Segunda pasada: generar código binario con metadatos de relocalización
+    resultado = []
+
+    for i, instruccion in enumerate(instrucciones_limpias):
+        partes = instruccion.split()
+        nombre_instruccion = partes[0]
+
+        # Verificar si la instrucción requiere relocalización
+        requiere_relocalizacion = False
+        valor_referencia = None
+
+        # Para operaciones de salto y memoria que requieren direcciones
+        if nombre_instruccion in saltos or nombre_instruccion in carga_memoria:
+            # El segundo argumento podría ser una etiqueta o una dirección
+            if len(partes) > 1:
+                argumento = partes[-1]  # Último argumento, que podría ser la dirección
+
+                # Si el argumento está en nuestro diccionario de etiquetas
+                if argumento in etiquetas:
+                    # Es una referencia a una etiqueta
+                    requiere_relocalizacion = True
+                    valor_referencia = etiquetas[argumento]
+                    nueva_instruccion = " ".join(partes[:-1] + [str(valor_referencia)])
+                elif argumento.isdigit() and int(argumento) < len(
+                    instrucciones_limpias
+                ):
+                    # Es una dirección numérica pero parece ser interna al programa
+                    requiere_relocalizacion = True
+                    valor_referencia = int(argumento)
+                    nueva_instruccion = instruccion
+                else:
+                    # Es una dirección externa, no requiere relocalización
+                    nueva_instruccion = instruccion
+            else:
+                nueva_instruccion = instruccion
+        else:
+            # Otros tipos de instrucciones
+            nueva_instruccion = instruccion
+
+        # Traducir la instrucción a código binario completo
+        codigo_binario = traducir_instruccion(nueva_instruccion)
+
+        # Agregar metadatos de relocalización si es necesario
+        if requiere_relocalizacion:
+            # Eliminar los últimos 11 bits y reemplazarlos por el valor entre paréntesis
+            codigo_base = codigo_binario[:-11]  # Todo excepto los últimos 11 bits
+            resultado.append(f"{codigo_base}({valor_referencia})")
+        else:
+            resultado.append(codigo_binario)
+
+    return resultado, etiquetas
 
 
 # Prueba del ensamblador
-# codigo_entrada = [
-#     "SALTAR 0",
-#     "CARGAR R4 2",
-#     "CARGAR R5 4",
-#     "ALMACENAR R6 32",
-#     "ALMACENAR R7 40",
-#     "ALMACENAR R2 1",
-#     "SALTARSICERO 7",
-#     "SALTARSICARRY 72",
-#     "SALTARSIPAR 130",
-#     "SALTAR 3",
-#     "ALMACENAR R5 9",
-#     "SALTAR 0",
-# ]
+codigo_entrada = [
+    "SALTAR 0",
+    "CARGAR R4 2",
+    "CARGAR R5 4",
+    "ALMACENAR R6 32",
+    "ALMACENAR R7 40",
+    "ALMACENAR R2 1",
+    "SALTARSICERO 7",
+    "SALTARSICARRY 72",
+    "SALTARSIPAR 130",
+    "SALTAR 3",
+    "ALMACENAR R5 9",
+    "SALTAR 0",
+]
+
+print(ensamblador(codigo_entrada)[0])
