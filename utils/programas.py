@@ -76,6 +76,12 @@ b = 20
     suma = a + b
 """
 
+programa_minimo = """
+const NOTA 4
+a = 10
+b = NOTA + 1
+"""
+
 # Para enlazador cargador
 codigo_entrada_enlazador = [
     "00000000000000000001000000000000",  # SALTO PARA PROBAR DIRECCIONES RELATIVAS
