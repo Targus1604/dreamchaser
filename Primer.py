@@ -3,13 +3,12 @@ import sys
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QStandardItem, QStandardItemModel
-from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QFileDialog, QTableWidgetItem
 
 from analisisLexico import lexer
 from computadora import Computadora
 from ensamblador import ensamblador
 from MainWindow import Ui_MainWindow
-from preprocesador import preprocesar_codigo
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -17,15 +16,86 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
 
+        self.inicializar()
+
         self.Abrir.clicked.connect(self.open_file_dialog)
-        self.Compilar.clicked.connect(self.analizar_codigo)
         self.Guardar.clicked.connect(self.guardar_archivo)
-        self.Preprocesar.clicked.connect(self.preprocesar)
         self.Abrir_2.clicked.connect(self.open_file_dialog2)
-        self.Compilar.clicked.connect(self.analizar_codigo)
+        self.Compilar.clicked.connect(self.compilar)
         self.Guardar_2.clicked.connect(self.guardar_archivo2)
         self.Ensamblar.clicked.connect(self.ensamblar)
         self.Enlazar.clicked.connect(self.enlazar_cargar)
+        self.Reiniciar.clicked.connect(self.inicializar)
+
+    def inicializar(self):
+        self.ResultadoEnsamblador.clear()
+        self.CodigoEnsamblador.clear()
+        # ResultadoEnsamblador QTextBrowser
+        # Crear múltiples líneas de 32 ceros
+        lineas = ["0" * 32 for _ in range(20)]  # Genera 10 líneas con 32 ceros cada una
+
+        # Unir todas las líneas con saltos de línea
+        contenido = "\n".join(lineas)
+
+        # Establecer el contenido en el QTextBrowser
+        self.ResultadoEnsamblador.setPlainText(contenido)
+
+        # Tabla de REGISTROS
+        self.Tabla_Registros.setRowCount(2)  # A y B
+        self.Tabla_Registros.setColumnCount(2)  # Binario y Decimal
+        registros = [
+            ("A", "00000000000000000000000000000000", "0"),
+            ("B", "00000000000000000000000000000000", "0"),
+        ]
+
+        for fila, (registro, binario, decimal) in enumerate(registros):
+            self.Tabla_Registros.setVerticalHeaderItem(fila, QTableWidgetItem(registro))
+            self.Tabla_Registros.setItem(fila, 0, QTableWidgetItem(binario))
+            self.Tabla_Registros.setItem(fila, 1, QTableWidgetItem(decimal))
+
+        # Tabla de INDICADORES ALU
+        self.Tabla_Alu.setRowCount(3)  # C, P, N
+        self.Tabla_Alu.setColumnCount(2)  # Binario y Decimal
+        indicadores = [("C", "00", "0"), ("P", "00", "0"), ("N", "00", "0")]
+
+        for fila, (nombre, binario, decimal) in enumerate(indicadores):
+            self.Tabla_Alu.setVerticalHeaderItem(fila, QTableWidgetItem(nombre))
+            self.Tabla_Alu.setItem(fila, 0, QTableWidgetItem(binario))
+            self.Tabla_Alu.setItem(fila, 1, QTableWidgetItem(decimal))
+
+        # Tabla de UNIDAD DE CONTROL
+        self.Tabla_Unidad_Control.setRowCount(2)  # IC, CP
+        self.Tabla_Unidad_Control.setColumnCount(1)  # Binario
+        control = [("IC", "00"), ("CP", "00")]
+
+        for fila, (nombre, binario) in enumerate(control):
+            self.Tabla_Unidad_Control.setVerticalHeaderItem(
+                fila, QTableWidgetItem(nombre)
+            )
+            self.Tabla_Unidad_Control.setItem(fila, 0, QTableWidgetItem(binario))
+
+        # Tabla RAM
+        filas = self.SalidaEnlazarCargar.rowCount()  # Obtener número de filas
+
+        for fila in range(filas):
+            # Crear un QTableWidgetItem con 32 ceros
+            item_binario = QTableWidgetItem("0" * 32)
+
+            # Hacer que la celda sea solo lectura
+            item_binario.setFlags(
+                Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled
+            )
+
+            # Insertar el valor en la columna 0
+            self.SalidaEnlazarCargar.setItem(fila, 0, item_binario)
+
+        # Ajustar tamaño de la columna para que se vea bien
+        self.SalidaEnlazarCargar.setColumnWidth(
+            0, 500
+        )  # Ajusta el ancho según sea necesario
+        self.Tabla_Registros.resizeColumnsToContents()
+        self.Tabla_Alu.resizeColumnsToContents()
+        self.Tabla_Unidad_Control.resizeColumnsToContents()
 
     def open_file_dialog(self):
         # Abrir explorador de archivos y filtrar solo archivos .txt
@@ -101,16 +171,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     f"Error al guardar el archivo: {e}"
                 )  # Mensaje de error en caso de fallo
 
-    def preprocesar(self):
-        texto = self.Editor.toPlainText()
-
-        result = preprocesar_codigo(texto)
-
-        self.Preprocesado.setPlainText(result)
-
-    def analizar_codigo(self):
+    def compilar(self):
         # Obtener el texto desde QPlainTextEdit (Editor)
-        texto = self.Preprocesado.toPlainText()
+        texto = self.Editor.toPlainText()
 
         # Pasar el texto al lexer
         lexer.input(texto)
@@ -127,9 +190,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if not token:
                 break  # Terminar cuando no hay más tokens
 
-            if token.type == "ESPACIO":
-                continue
-
             # Crear fila con los atributos del token
             row = [
                 QStandardItem(token.type),
@@ -144,9 +204,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             model.appendRow(row)  # Agregar fila a la tabla
 
-        # Asignar modelo al QTableView (TablaAnalisis)
-        self.TablaAnalisis.setModel(model)
-
     def ensamblar(self):
         codigo = self.CodigoEnsamblador.toPlainText()
         codigo_formateado = codigo.splitlines()
@@ -158,28 +215,42 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         codigo = self.ResultadoEnsamblador.toPlainText()
         codigo_formateado = codigo.splitlines()  # Convertirlo en lista de líneas
 
+        # Obtener la dirección de inicio desde QSpinBox
+        direccion_inicio = self.Localizacion.value()
+
         # Crear instancia de Computadora
         compu = Computadora()
-        memoria = compu.cargar_codigo(codigo_formateado)
+        compu.cargar_codigo(codigo_formateado, direccion_de_inicio=direccion_inicio)
 
-        # Crear modelo para la tabla
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(["Binario"])  # Columnas
+        # Obtener memoria cargada
+        memoria = compu.mostrar_memoria()
+        # Limpiar la tabla antes de agregar nuevos datos
+        # self.SalidaEnlazarCargar.clearContents()
+        # self.SalidaEnlazarCargar.setRowCount(0)
 
-        # Llenar la tabla con datos de memoria
-        for instr in memoria:
-            row = [QStandardItem(str(instr))]  # Instrucción en binario
+        self.SalidaEnlazarCargar.setRowCount(1024)
 
-            # Hacer cada celda de solo lectura
-            for item in row:
-                item.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
+        # No limpiar toda la tabla, solo actualizar las filas necesarias
+        for direccion, instr in memoria:
+            fila = int(
+                direccion
+            )  # Convertir dirección en entero (asumiendo formato hexadecimal)
 
-            model.appendRow(row)
+            if 0 <= fila < self.SalidaEnlazarCargar.rowCount():
+                item_binario = QTableWidgetItem(str(instr))
+                item_binario.setTextAlignment(
+                    Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+                )
+                item_binario.setFlags(
+                    Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled
+                )
+                self.SalidaEnlazarCargar.setItem(
+                    fila, 0, item_binario
+                )  # Agregar el valor en la posición correcta
 
-        # Asignar modelo a la tabla
-        self.SalidaEnlazarCargar.setModel(model)
-        # Ajustar tamaño de las columnas
-        self.SalidaEnlazarCargar.setColumnWidth(0, 350)  # Columna "Dirección"
+        # Ajustar tamaño de la columna
+        # self.SalidaEnlazarCargar.setColumnWidth(0, 500)  # Ajusta según sea necesario
+        self.SalidaEnlazarCargar.resizeColumnsToContents()  # Ajusta el ancho según el contenido
 
 
 app = QtWidgets.QApplication(sys.argv)

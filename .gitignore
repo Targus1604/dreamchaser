@@ -18,5 +18,3 @@ myenv/
 *.pyc
 *.pyo
 *.pyd
-
-.qtcreator/

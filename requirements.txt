@@ -27,7 +27,7 @@ PySide6==6.8.2
 PySide6_Addons==6.8.2
 PySide6_Essentials==6.8.2
 python-dateutil==2.9.0.post0
-pywin32==308
+# pywin32==308
 pyzmq==26.2.1
 shiboken6==6.8.2
 six==1.17.0
