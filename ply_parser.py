@@ -1,310 +1,198 @@
-import ply.yacc as yacc
-from analisisLexico import lexer, tokens  # Importa el lexer y los tokens
+import src.ply.yacc as yacc
+from analisisLexico import constantes, lexer, tokens
 
-# Tabla de símbolos para almacenar variables y constantes
-symbol_table = {}
+# Diccionario de nombres (variables y constantes)
+nombres = {}
+
+
+class Nodo:
+    def __init__(self, tipo, hijos=None, valor=None):
+        self.tipo = tipo
+        self.hijos = hijos if hijos else []
+        self.valor = valor
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        if self.valor is not None:
+            return f"{self.tipo}({self.valor})"
+        else:
+            return f"{self.tipo}({', '.join(map(str, self.hijos))})"
+
+    def imprimir(self, nivel=0):
+        """Imprime el AST con formato indentado para mejor legibilidad"""
+        indentacion = "  " * nivel
+        if self.valor is not None:
+            print(f"{indentacion}{self.tipo}: {self.valor}")
+        else:
+            print(f"{indentacion}{self.tipo}")
+            for hijo in self.hijos:
+                hijo.imprimir(nivel + 1)
+
 
 # Precedencia para operadores
 precedence = (
-    ("right", "POTENCIA"),  # <-- Agregamos la precedencia para potencia
-    ("left", "MULTIPLICACION", "DIVISION", "DIVISION_ENTERA"),
     ("left", "SUMA", "RESTA"),
+    ("left", "MULTIPLICACION", "DIVISION", "DIVISION_ENTERA"),
 )
 
 
-# Reglas de producción
+# Ignorar completamente los espacios y nuevas líneas vacías
 def p_programa(p):
-    """programa : importaciones constantes variables instrucciones"""
-    print("Programa reconocido correctamente.")
+    """programa : declaraciones"""
+    p[0] = Nodo("programa", [p[1]])
 
 
-def p_importaciones(p):
-    """importaciones : importaciones IMPORTAR CADENA
-    | empty"""
-    if len(p) == 4:
-        print(f"Importación: {p[3]}")
-
-
-def p_constantes(p):
-    """constantes : constantes CONST IDENTIFICADOR valor
-    | empty"""
-    if len(p) == 5:
-        symbol_table[p[3]] = p[4]  # Guardar en la tabla de símbolos
-        print(f"Constante definida: {p[3]} = {p[4]}")
-    else:
-        p[0] = None
-
-
-def p_variables(p):
-    """variables : variables IDENTIFICADOR ASIGNACION expresion
-    | empty"""
-    if len(p) == 5:
-        symbol_table[p[2]] = p[4]  # Guardar en la tabla de símbolos
-        print(f"Variable definida: {p[2]} = {p[4]}")
-    else:
-        p[0] = None
-
-
-def p_valor(p):
-    """valor : NUMERO
-    | VERDADERO
-    | FALSO
-    | CADENA
-    | IDENTIFICADOR"""
-    if (
-        isinstance(p[1], str) and p[1] in symbol_table
-    ):  # Si es un identificador y está en la tabla
-        p[0] = symbol_table[p[1]]
-    else:
-        p[0] = p[1]  # Si es un número o cadena, devolverlo tal cual
-    print(f"Valor reconocido: {p[0]}")
-
-
-def p_instrucciones(p):
-    """instrucciones : instrucciones operacion
-    | instrucciones control
-    | instrucciones funcion
-    | instrucciones COMENTARIO
-    | empty"""
-    pass
-
-
-def p_operacion(p):
-    """operacion : expresion"""
-    print(f"Resultado de la operación: {p[1]}")  # Mostrar el resultado final
-
-
-variables = {}
-
-
-def get_value(value):
-    """Convierte strings numéricos a float o busca valores en variables."""
-    if isinstance(value, str):
-        if value.replace(".", "", 1).isdigit():  # Si es número, convertirlo a float
-            return float(value)
-        elif value in variables:  # Si es una variable, obtener su valor
-            return variables[value]
-    return value  # Si no es número ni variable, devolverlo tal cual
-
-
-variables = {}  # Diccionario para almacenar variables
-
-
-def get_value(value):
-    """Convierte strings numéricos a float o busca valores en variables."""
-    if isinstance(value, (int, float)):  # Si ya es un número, devolverlo directamente
-        return value
-    elif isinstance(value, str):
-        if value.replace(
-            ".", "", 1
-        ).isdigit():  # Convertir a float si es un número válido
-            return float(value)
-        elif value in variables:  # Si es una variable definida, obtener su valor
-            return variables[value]
+def p_declaraciones(p):
+    """declaraciones : declaraciones NUEVA_LINEA declaracion
+    | declaraciones NUEVA_LINEA
+    | declaracion"""
+    if len(p) == 4:  # declaraciones NUEVA_LINEA declaracion
+        # Solo añadimos la declaración si no es None
+        if p[3] is not None:
+            p[0] = Nodo("declaraciones", p[1].hijos + [p[3]])
         else:
-            return None  # Si no está definida, devolver None
-    return value
-
-
-def p_expresion(p):
-    """expresion : termino
-    | expresion SUMA termino
-    | expresion RESTA termino
-    | expresion MULTIPLICACION termino
-    | expresion DIVISION termino
-    | expresion DIVISION_ENTERA termino
-    | expresion POTENCIA termino
-    | expresion IGUALDAD expresion
-    | expresion DIFERENTE expresion
-    | expresion MAYOR expresion
-    | expresion MENOR expresion
-    | expresion MAYOR_IGUAL expresion
-    | expresion MENOR_IGUAL expresion"""
-
-    if len(p) == 2:
-        p[0] = get_value(p[1])  # Obtener el valor de la variable si es necesario
-    else:
-        p1 = get_value(p[1])
-        p3 = get_value(p[3])
-
-        # 🚨 Evitar errores con números
-        if p1 is None or p3 is None:
-            if p1 is None and isinstance(p[1], str):
-                print(f"Error: Variable no definida -> {p[1]}")
-            if p3 is None and isinstance(p[3], str):
-                print(f"Error: Variable no definida -> {p[3]}")
-            p[0] = None
-            return
-
-        # Solo operar si ambos son números
-        if isinstance(p1, (int, float)) and isinstance(p3, (int, float)):
-            if p[2] == "+":
-                p[0] = p1 + p3
-            elif p[2] == "-":
-                p[0] = p1 - p3
-            elif p[2] == "*":
-                p[0] = p1 * p3
-            elif p[2] == "/":
-                p[0] = p1 / p3
-            elif p[2] == "//":
-                p[0] = p1 // p3
-            elif p[2] == "^":
-                p[0] = p1**p3
-            elif p[2] == "==":
-                p[0] = p1 == p3
-            elif p[2] == "!=":
-                p[0] = p1 != p3
-            elif p[2] == ">":
-                p[0] = p1 > p3
-            elif p[2] == "<":
-                p[0] = p1 < p3
-            elif p[2] == ">=":
-                p[0] = p1 >= p3
-            elif p[2] == "<=":
-                p[0] = p1 <= p3
-        else:
-            print(f"Error: No se puede operar con {p1} y {p3}")
-            p[0] = None
-
-
-def p_termino(p):
-    """termino : valor
-    | PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO"""
-    if len(p) == 2:
+            p[0] = p[1]
+    elif len(p) == 3:  # declaraciones NUEVA_LINEA
         p[0] = p[1]
-    else:
-        p[0] = p[2]
+    else:  # declaracion
+        p[0] = Nodo("declaraciones", [p[1]])
 
 
-def p_control(p):
-    """control : SI expresion bloque
-    | SI expresion bloque SINO bloque
-    | MIENTRAS expresion bloque"""
-
-    if p[1] == "si":  # Condición si
-        if p[2]:  # Evaluamos la expresión booleana
-            ejecutar_bloque(p[3])
-        elif len(p) == 6:  # Si hay sino
-            ejecutar_bloque(p[5])
-
-    elif p[1] == "mientras":  # Condición mientras
-        while p[2]:  # Mientras la expresión sea verdadera
-            ejecutar_bloque(p[3])  # Ejecutar el bloque
-            p[2] = evaluar_expresion(p[2])  # Reevaluar la condición
+def p_declaracion(p):
+    """declaracion : declaracion_constante
+    | declaracion_asignacion
+    | expresion"""
+    p[0] = p[1]
 
 
-def p_bloque(p):
-    """bloque : LLAVE_IZQUIERDA instrucciones LLAVE_DERECHA"""
-    pass
-
-
-def p_funcion(p):
-    """funcion : FUNCION IDENTIFICADOR PARENTESIS_IZQUIERDO parametros PARENTESIS_DERECHO bloque"""
-    pass
-
-
-def p_parametros(p):
-    """parametros : empty
-    | IDENTIFICADOR
-    | parametros COMA IDENTIFICADOR"""
-    pass
-
-
-def p_expresion_booleana(p):
-    """expresion_booleana : expresion IGUALDAD expresion
-    | expresion DIFERENTE expresion
-    | expresion MAYOR expresion
-    | expresion MENOR expresion
-    | expresion MAYOR_IGUAL expresion
-    | expresion MENOR_IGUAL expresion
-    | expresion_booleana AND expresion_booleana
-    | expresion_booleana OR expresion_booleana
-    | NOT expresion_booleana
-    | VERDADERO
-    | FALSO"""
+def p_declaracion_constante(p):
+    """declaracion_constante : CONST ID NUMERO
+    | CONST ESPACIO ID ESPACIO NUMERO"""
     if len(p) == 4:
-        if p[2] == "==":
-            p[0] = p[1] == p[3]
-        elif p[2] == "!=":
-            p[0] = p[1] != p[3]
-        elif p[2] == ">":
-            p[0] = p[1] > p[3]
-        elif p[2] == "<":
-            p[0] = p[1] < p[3]
-        elif p[2] == ">=":
-            p[0] = p[1] >= p[3]
-        elif p[2] == "<=":
-            p[0] = p[1] <= p[3]
-        elif p[2] == "and":
-            p[0] = p[1] and p[3]
-        elif p[2] == "or":
-            p[0] = p[1] or p[3]
-    elif len(p) == 3:  # NOT expresion_booleana
-        p[0] = not p[2]
+        id_name, valor = p[2], p[3]
     else:
-        p[0] = p[1]
+        id_name, valor = p[3], p[5]
+
+    constantes[id_name] = valor
+    p[0] = Nodo("constante", [Nodo("ID", valor=id_name), Nodo("NUMERO", valor=valor)])
 
 
-def p_empty(p):
-    "empty :"
-    pass
+def p_declaracion_constante_string(p):
+    """declaracion_constante : CONST ID STRING
+    | CONST ESPACIO ID ESPACIO STRING"""
+    if len(p) == 4:
+        id_name, valor = p[2], p[3]
+    else:
+        id_name, valor = p[3], p[5]
+
+    constantes[id_name] = valor
+    p[0] = Nodo("constante", [Nodo("ID", valor=id_name), Nodo("STRING", valor=valor)])
+
+
+def p_declaracion_asignacion(p):
+    """declaracion_asignacion : ID ASIGNACION expresion
+    | ID ESPACIO ASIGNACION ESPACIO expresion"""
+    if len(p) == 4:
+        id_name, expr = p[1], p[3]
+    else:
+        id_name, expr = p[1], p[5]
+
+    nombres[id_name] = expr
+    p[0] = Nodo("asignacion", [Nodo("ID", valor=id_name), expr])
+
+
+def p_expresion_binaria(p):
+    """expresion : expresion SUMA expresion
+    | expresion RESTA expresion
+    | expresion MULTIPLICACION expresion
+    | expresion DIVISION expresion
+    | expresion DIVISION_ENTERA expresion
+    | expresion ESPACIO SUMA ESPACIO expresion
+    | expresion ESPACIO RESTA ESPACIO expresion
+    | expresion ESPACIO MULTIPLICACION ESPACIO expresion
+    | expresion ESPACIO DIVISION ESPACIO expresion
+    | expresion ESPACIO DIVISION_ENTERA ESPACIO expresion"""
+    if len(p) == 4:
+        operador = p[2]
+        izq, der = p[1], p[3]
+    else:
+        operador = p[3]
+        izq, der = p[1], p[5]
+
+    p[0] = Nodo("binaria", [izq, Nodo("operador", valor=operador), der])
+
+
+def p_expresion_parentesis(p):
+    """expresion : PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO"""
+    p[0] = p[2]
+
+
+def p_expresion_numero(p):
+    """expresion : NUMERO"""
+    p[0] = Nodo("NUMERO", valor=p[1])
+
+
+def p_expresion_string(p):
+    """expresion : STRING"""
+    p[0] = Nodo("STRING", valor=p[1])
+
+
+def p_expresion_id(p):
+    """expresion : ID"""
+    if p[1] in constantes:
+        p[0] = Nodo("constante_ref", valor=p[1])
+    elif p[1] in nombres:
+        p[0] = Nodo("variable_ref", valor=p[1])
+    else:
+        print(f"Error: identificador '{p[1]}' no definido")
+        p[0] = Nodo("error", valor=p[1])
 
 
 def p_error(p):
     if p:
-        print(f"Error de sintaxis en: {p.value}")
+        print(
+            f"Error de sintaxis en '{p.value}', línea {p.lineno}, posición {p.lexpos}"
+        )
     else:
-        print("Error de sintaxis: Fin de entrada inesperado")
+        print("Error de sintaxis en EOF")
 
 
-# Construir el analizador
-parser = yacc.yacc()
+# Construir el parser
+parser = yacc.yacc(debug=False)
 
-# Prueba del analizador
-data = """
-const PI 3
-const E 2.718281828
-const MATERIA LENGUAJESDEPROGRAMACION
 
+# Función para analizar un programa
+def analizar(programa):
+    # Reiniciar los diccionarios para evitar conflictos entre ejecuciones
+    nombres.clear()
+    # No limpiamos constantes porque en tu código original no las limpiabas
+
+    # Analizar el programa
+    lexer.lineno = 1  # Reiniciar el contador de líneas
+    ast = parser.parse(programa, lexer=lexer)
+    return ast
+
+
+# Programa de prueba
+def probar_parser():
+    programa_minimo = """
+const NOTA 4
 a = 10
-b = 20.5
-c = 1e-3
-d = verdadero
-e = falso
-
-# Operadores relacionales
-igual = a == b
-diferente = a != b
-mayor = a > b
-menor = a < b
-mayorIgual = a >= b
-menorIgual = a <= b
-
-suma = a + b
-resta = a - b
-multiplicacion = a * b
-division = a / b
-divisionEntera = a // b
-potencia = b ^ a
-
-2^3
-
-#ESTE ES UN COMENTARIO
-
-si a > b
-    retornar a
-sino
-    retornar b
-
-funcion calcularArea(radio)
-    retornar PI * radio
-
-# Llamada a la función
-area = calcularArea(5)
-materia2 = MATERIA
-
-# Comentario de prueba
-# Este es un comentario que debe ser ignorado por el lexer
+b = NOTA + 1
 """
 
-parser.parse(data, lexer=lexer)
+    ast = analizar(programa_minimo)
+    print("\nÁrbol de sintaxis abstracta (AST):")
+    if ast:
+        ast.imprimir()  # Usar el método de impresión indentada
+    else:
+        print("No se generó un AST.")
+
+    print("\nConstantes:", constantes)
+    print("Variables:", nombres)
+
+
+if __name__ == "__main__":
+    probar_parser()

@@ -1,0 +1,846 @@
+Created by PLY (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    BOOLEANO
+    COMA
+    COMENTARIO
+    DIFERENTE
+    ESPACIO
+    FALSO
+    FUNCION
+    IGUALDAD
+    IMPORTAR
+    INDENTACION
+    MAYOR
+    MAYOR_IGUAL
+    MENOR
+    MENOR_IGUAL
+    MIENTRAS
+    NO
+    O
+    PARA
+    RETORNAR
+    SI
+    SINO
+    VERDADERO
+    Y
+
+Grammar
+
+Rule 0     S' -> programa
+Rule 1     programa -> declaraciones
+Rule 2     declaraciones -> declaraciones declaracion
+Rule 3     declaraciones -> declaracion
+Rule 4     declaracion -> linea
+Rule 5     declaracion -> NUEVA_LINEA
+Rule 6     linea -> expr_declaracion NUEVA_LINEA
+Rule 7     linea -> expr_declaracion
+Rule 8     expr_declaracion -> declaracion_constante
+Rule 9     expr_declaracion -> declaracion_asignacion
+Rule 10    expr_declaracion -> expresion
+Rule 11    declaracion_constante -> CONST ID NUMERO
+Rule 12    declaracion_constante -> CONST ID STRING
+Rule 13    declaracion_asignacion -> ID ASIGNACION expresion
+Rule 14    expresion -> expresion SUMA expresion
+Rule 15    expresion -> expresion RESTA expresion
+Rule 16    expresion -> expresion MULTIPLICACION expresion
+Rule 17    expresion -> expresion DIVISION expresion
+Rule 18    expresion -> expresion DIVISION_ENTERA expresion
+Rule 19    expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+Rule 20    expresion -> NUMERO
+Rule 21    expresion -> STRING
+Rule 22    expresion -> ID
+
+Terminals, with rules where they appear
+
+ASIGNACION           : 13
+BOOLEANO             : 
+COMA                 : 
+COMENTARIO           : 
+CONST                : 11 12
+DIFERENTE            : 
+DIVISION             : 17
+DIVISION_ENTERA      : 18
+ESPACIO              : 
+FALSO                : 
+FUNCION              : 
+ID                   : 11 12 13 22
+IGUALDAD             : 
+IMPORTAR             : 
+INDENTACION          : 
+MAYOR                : 
+MAYOR_IGUAL          : 
+MENOR                : 
+MENOR_IGUAL          : 
+MIENTRAS             : 
+MULTIPLICACION       : 16
+NO                   : 
+NUEVA_LINEA          : 5 6
+NUMERO               : 11 20
+O                    : 
+PARA                 : 
+PARENTESIS_DERECHO   : 19
+PARENTESIS_IZQUIERDO : 19
+RESTA                : 15
+RETORNAR             : 
+SI                   : 
+SINO                 : 
+STRING               : 12 21
+SUMA                 : 14
+VERDADERO            : 
+Y                    : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+declaracion          : 2 3
+declaracion_asignacion : 9
+declaracion_constante : 8
+declaraciones        : 1 2
+expr_declaracion     : 6 7
+expresion            : 10 13 14 14 15 15 16 16 17 17 18 18 19
+linea                : 4
+programa             : 0
+
+
+state 0
+
+    (0) S' -> . programa
+    (1) programa -> . declaraciones
+    (2) declaraciones -> . declaraciones declaracion
+    (3) declaraciones -> . declaracion
+    (4) declaracion -> . linea
+    (5) declaracion -> . NUEVA_LINEA
+    (6) linea -> . expr_declaracion NUEVA_LINEA
+    (7) linea -> . expr_declaracion
+    (8) expr_declaracion -> . declaracion_constante
+    (9) expr_declaracion -> . declaracion_asignacion
+    (10) expr_declaracion -> . expresion
+    (11) declaracion_constante -> . CONST ID NUMERO
+    (12) declaracion_constante -> . CONST ID STRING
+    (13) declaracion_asignacion -> . ID ASIGNACION expresion
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    NUEVA_LINEA     shift and go to state 5
+    CONST           shift and go to state 10
+    ID              shift and go to state 11
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+
+    programa                       shift and go to state 1
+    declaraciones                  shift and go to state 2
+    declaracion                    shift and go to state 3
+    linea                          shift and go to state 4
+    expr_declaracion               shift and go to state 6
+    declaracion_constante          shift and go to state 7
+    declaracion_asignacion         shift and go to state 8
+    expresion                      shift and go to state 9
+
+state 1
+
+    (0) S' -> programa .
+
+
+
+state 2
+
+    (1) programa -> declaraciones .
+    (2) declaraciones -> declaraciones . declaracion
+    (4) declaracion -> . linea
+    (5) declaracion -> . NUEVA_LINEA
+    (6) linea -> . expr_declaracion NUEVA_LINEA
+    (7) linea -> . expr_declaracion
+    (8) expr_declaracion -> . declaracion_constante
+    (9) expr_declaracion -> . declaracion_asignacion
+    (10) expr_declaracion -> . expresion
+    (11) declaracion_constante -> . CONST ID NUMERO
+    (12) declaracion_constante -> . CONST ID STRING
+    (13) declaracion_asignacion -> . ID ASIGNACION expresion
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    $end            reduce using rule 1 (programa -> declaraciones .)
+    NUEVA_LINEA     shift and go to state 5
+    CONST           shift and go to state 10
+    ID              shift and go to state 11
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+
+    declaracion                    shift and go to state 15
+    linea                          shift and go to state 4
+    expr_declaracion               shift and go to state 6
+    declaracion_constante          shift and go to state 7
+    declaracion_asignacion         shift and go to state 8
+    expresion                      shift and go to state 9
+
+state 3
+
+    (3) declaraciones -> declaracion .
+
+    NUEVA_LINEA     reduce using rule 3 (declaraciones -> declaracion .)
+    CONST           reduce using rule 3 (declaraciones -> declaracion .)
+    ID              reduce using rule 3 (declaraciones -> declaracion .)
+    PARENTESIS_IZQUIERDO reduce using rule 3 (declaraciones -> declaracion .)
+    NUMERO          reduce using rule 3 (declaraciones -> declaracion .)
+    STRING          reduce using rule 3 (declaraciones -> declaracion .)
+    $end            reduce using rule 3 (declaraciones -> declaracion .)
+
+
+state 4
+
+    (4) declaracion -> linea .
+
+    NUEVA_LINEA     reduce using rule 4 (declaracion -> linea .)
+    CONST           reduce using rule 4 (declaracion -> linea .)
+    ID              reduce using rule 4 (declaracion -> linea .)
+    PARENTESIS_IZQUIERDO reduce using rule 4 (declaracion -> linea .)
+    NUMERO          reduce using rule 4 (declaracion -> linea .)
+    STRING          reduce using rule 4 (declaracion -> linea .)
+    $end            reduce using rule 4 (declaracion -> linea .)
+
+
+state 5
+
+    (5) declaracion -> NUEVA_LINEA .
+
+    NUEVA_LINEA     reduce using rule 5 (declaracion -> NUEVA_LINEA .)
+    CONST           reduce using rule 5 (declaracion -> NUEVA_LINEA .)
+    ID              reduce using rule 5 (declaracion -> NUEVA_LINEA .)
+    PARENTESIS_IZQUIERDO reduce using rule 5 (declaracion -> NUEVA_LINEA .)
+    NUMERO          reduce using rule 5 (declaracion -> NUEVA_LINEA .)
+    STRING          reduce using rule 5 (declaracion -> NUEVA_LINEA .)
+    $end            reduce using rule 5 (declaracion -> NUEVA_LINEA .)
+
+
+state 6
+
+    (6) linea -> expr_declaracion . NUEVA_LINEA
+    (7) linea -> expr_declaracion .
+
+  ! shift/reduce conflict for NUEVA_LINEA resolved as shift
+    NUEVA_LINEA     shift and go to state 16
+    CONST           reduce using rule 7 (linea -> expr_declaracion .)
+    ID              reduce using rule 7 (linea -> expr_declaracion .)
+    PARENTESIS_IZQUIERDO reduce using rule 7 (linea -> expr_declaracion .)
+    NUMERO          reduce using rule 7 (linea -> expr_declaracion .)
+    STRING          reduce using rule 7 (linea -> expr_declaracion .)
+    $end            reduce using rule 7 (linea -> expr_declaracion .)
+
+  ! NUEVA_LINEA     [ reduce using rule 7 (linea -> expr_declaracion .) ]
+
+
+state 7
+
+    (8) expr_declaracion -> declaracion_constante .
+
+    NUEVA_LINEA     reduce using rule 8 (expr_declaracion -> declaracion_constante .)
+    CONST           reduce using rule 8 (expr_declaracion -> declaracion_constante .)
+    ID              reduce using rule 8 (expr_declaracion -> declaracion_constante .)
+    PARENTESIS_IZQUIERDO reduce using rule 8 (expr_declaracion -> declaracion_constante .)
+    NUMERO          reduce using rule 8 (expr_declaracion -> declaracion_constante .)
+    STRING          reduce using rule 8 (expr_declaracion -> declaracion_constante .)
+    $end            reduce using rule 8 (expr_declaracion -> declaracion_constante .)
+
+
+state 8
+
+    (9) expr_declaracion -> declaracion_asignacion .
+
+    NUEVA_LINEA     reduce using rule 9 (expr_declaracion -> declaracion_asignacion .)
+    CONST           reduce using rule 9 (expr_declaracion -> declaracion_asignacion .)
+    ID              reduce using rule 9 (expr_declaracion -> declaracion_asignacion .)
+    PARENTESIS_IZQUIERDO reduce using rule 9 (expr_declaracion -> declaracion_asignacion .)
+    NUMERO          reduce using rule 9 (expr_declaracion -> declaracion_asignacion .)
+    STRING          reduce using rule 9 (expr_declaracion -> declaracion_asignacion .)
+    $end            reduce using rule 9 (expr_declaracion -> declaracion_asignacion .)
+
+
+state 9
+
+    (10) expr_declaracion -> expresion .
+    (14) expresion -> expresion . SUMA expresion
+    (15) expresion -> expresion . RESTA expresion
+    (16) expresion -> expresion . MULTIPLICACION expresion
+    (17) expresion -> expresion . DIVISION expresion
+    (18) expresion -> expresion . DIVISION_ENTERA expresion
+
+    NUEVA_LINEA     reduce using rule 10 (expr_declaracion -> expresion .)
+    CONST           reduce using rule 10 (expr_declaracion -> expresion .)
+    ID              reduce using rule 10 (expr_declaracion -> expresion .)
+    PARENTESIS_IZQUIERDO reduce using rule 10 (expr_declaracion -> expresion .)
+    NUMERO          reduce using rule 10 (expr_declaracion -> expresion .)
+    STRING          reduce using rule 10 (expr_declaracion -> expresion .)
+    $end            reduce using rule 10 (expr_declaracion -> expresion .)
+    SUMA            shift and go to state 17
+    RESTA           shift and go to state 18
+    MULTIPLICACION  shift and go to state 19
+    DIVISION        shift and go to state 20
+    DIVISION_ENTERA shift and go to state 21
+
+
+state 10
+
+    (11) declaracion_constante -> CONST . ID NUMERO
+    (12) declaracion_constante -> CONST . ID STRING
+
+    ID              shift and go to state 22
+
+
+state 11
+
+    (13) declaracion_asignacion -> ID . ASIGNACION expresion
+    (22) expresion -> ID .
+
+    ASIGNACION      shift and go to state 23
+    SUMA            reduce using rule 22 (expresion -> ID .)
+    RESTA           reduce using rule 22 (expresion -> ID .)
+    MULTIPLICACION  reduce using rule 22 (expresion -> ID .)
+    DIVISION        reduce using rule 22 (expresion -> ID .)
+    DIVISION_ENTERA reduce using rule 22 (expresion -> ID .)
+    NUEVA_LINEA     reduce using rule 22 (expresion -> ID .)
+    CONST           reduce using rule 22 (expresion -> ID .)
+    ID              reduce using rule 22 (expresion -> ID .)
+    PARENTESIS_IZQUIERDO reduce using rule 22 (expresion -> ID .)
+    NUMERO          reduce using rule 22 (expresion -> ID .)
+    STRING          reduce using rule 22 (expresion -> ID .)
+    $end            reduce using rule 22 (expresion -> ID .)
+
+
+state 12
+
+    (20) expresion -> NUMERO .
+
+    SUMA            reduce using rule 20 (expresion -> NUMERO .)
+    RESTA           reduce using rule 20 (expresion -> NUMERO .)
+    MULTIPLICACION  reduce using rule 20 (expresion -> NUMERO .)
+    DIVISION        reduce using rule 20 (expresion -> NUMERO .)
+    DIVISION_ENTERA reduce using rule 20 (expresion -> NUMERO .)
+    NUEVA_LINEA     reduce using rule 20 (expresion -> NUMERO .)
+    CONST           reduce using rule 20 (expresion -> NUMERO .)
+    ID              reduce using rule 20 (expresion -> NUMERO .)
+    PARENTESIS_IZQUIERDO reduce using rule 20 (expresion -> NUMERO .)
+    NUMERO          reduce using rule 20 (expresion -> NUMERO .)
+    STRING          reduce using rule 20 (expresion -> NUMERO .)
+    $end            reduce using rule 20 (expresion -> NUMERO .)
+    PARENTESIS_DERECHO reduce using rule 20 (expresion -> NUMERO .)
+
+
+state 13
+
+    (21) expresion -> STRING .
+
+    SUMA            reduce using rule 21 (expresion -> STRING .)
+    RESTA           reduce using rule 21 (expresion -> STRING .)
+    MULTIPLICACION  reduce using rule 21 (expresion -> STRING .)
+    DIVISION        reduce using rule 21 (expresion -> STRING .)
+    DIVISION_ENTERA reduce using rule 21 (expresion -> STRING .)
+    NUEVA_LINEA     reduce using rule 21 (expresion -> STRING .)
+    CONST           reduce using rule 21 (expresion -> STRING .)
+    ID              reduce using rule 21 (expresion -> STRING .)
+    PARENTESIS_IZQUIERDO reduce using rule 21 (expresion -> STRING .)
+    NUMERO          reduce using rule 21 (expresion -> STRING .)
+    STRING          reduce using rule 21 (expresion -> STRING .)
+    $end            reduce using rule 21 (expresion -> STRING .)
+    PARENTESIS_DERECHO reduce using rule 21 (expresion -> STRING .)
+
+
+state 14
+
+    (19) expresion -> PARENTESIS_IZQUIERDO . expresion PARENTESIS_DERECHO
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+    ID              shift and go to state 25
+
+    expresion                      shift and go to state 24
+
+state 15
+
+    (2) declaraciones -> declaraciones declaracion .
+
+    NUEVA_LINEA     reduce using rule 2 (declaraciones -> declaraciones declaracion .)
+    CONST           reduce using rule 2 (declaraciones -> declaraciones declaracion .)
+    ID              reduce using rule 2 (declaraciones -> declaraciones declaracion .)
+    PARENTESIS_IZQUIERDO reduce using rule 2 (declaraciones -> declaraciones declaracion .)
+    NUMERO          reduce using rule 2 (declaraciones -> declaraciones declaracion .)
+    STRING          reduce using rule 2 (declaraciones -> declaraciones declaracion .)
+    $end            reduce using rule 2 (declaraciones -> declaraciones declaracion .)
+
+
+state 16
+
+    (6) linea -> expr_declaracion NUEVA_LINEA .
+
+    NUEVA_LINEA     reduce using rule 6 (linea -> expr_declaracion NUEVA_LINEA .)
+    CONST           reduce using rule 6 (linea -> expr_declaracion NUEVA_LINEA .)
+    ID              reduce using rule 6 (linea -> expr_declaracion NUEVA_LINEA .)
+    PARENTESIS_IZQUIERDO reduce using rule 6 (linea -> expr_declaracion NUEVA_LINEA .)
+    NUMERO          reduce using rule 6 (linea -> expr_declaracion NUEVA_LINEA .)
+    STRING          reduce using rule 6 (linea -> expr_declaracion NUEVA_LINEA .)
+    $end            reduce using rule 6 (linea -> expr_declaracion NUEVA_LINEA .)
+
+
+state 17
+
+    (14) expresion -> expresion SUMA . expresion
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+    ID              shift and go to state 25
+
+    expresion                      shift and go to state 26
+
+state 18
+
+    (15) expresion -> expresion RESTA . expresion
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+    ID              shift and go to state 25
+
+    expresion                      shift and go to state 27
+
+state 19
+
+    (16) expresion -> expresion MULTIPLICACION . expresion
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+    ID              shift and go to state 25
+
+    expresion                      shift and go to state 28
+
+state 20
+
+    (17) expresion -> expresion DIVISION . expresion
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+    ID              shift and go to state 25
+
+    expresion                      shift and go to state 29
+
+state 21
+
+    (18) expresion -> expresion DIVISION_ENTERA . expresion
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+    ID              shift and go to state 25
+
+    expresion                      shift and go to state 30
+
+state 22
+
+    (11) declaracion_constante -> CONST ID . NUMERO
+    (12) declaracion_constante -> CONST ID . STRING
+
+    NUMERO          shift and go to state 31
+    STRING          shift and go to state 32
+
+
+state 23
+
+    (13) declaracion_asignacion -> ID ASIGNACION . expresion
+    (14) expresion -> . expresion SUMA expresion
+    (15) expresion -> . expresion RESTA expresion
+    (16) expresion -> . expresion MULTIPLICACION expresion
+    (17) expresion -> . expresion DIVISION expresion
+    (18) expresion -> . expresion DIVISION_ENTERA expresion
+    (19) expresion -> . PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO
+    (20) expresion -> . NUMERO
+    (21) expresion -> . STRING
+    (22) expresion -> . ID
+
+    PARENTESIS_IZQUIERDO shift and go to state 14
+    NUMERO          shift and go to state 12
+    STRING          shift and go to state 13
+    ID              shift and go to state 25
+
+    expresion                      shift and go to state 33
+
+state 24
+
+    (19) expresion -> PARENTESIS_IZQUIERDO expresion . PARENTESIS_DERECHO
+    (14) expresion -> expresion . SUMA expresion
+    (15) expresion -> expresion . RESTA expresion
+    (16) expresion -> expresion . MULTIPLICACION expresion
+    (17) expresion -> expresion . DIVISION expresion
+    (18) expresion -> expresion . DIVISION_ENTERA expresion
+
+    PARENTESIS_DERECHO shift and go to state 34
+    SUMA            shift and go to state 17
+    RESTA           shift and go to state 18
+    MULTIPLICACION  shift and go to state 19
+    DIVISION        shift and go to state 20
+    DIVISION_ENTERA shift and go to state 21
+
+
+state 25
+
+    (22) expresion -> ID .
+
+    PARENTESIS_DERECHO reduce using rule 22 (expresion -> ID .)
+    SUMA            reduce using rule 22 (expresion -> ID .)
+    RESTA           reduce using rule 22 (expresion -> ID .)
+    MULTIPLICACION  reduce using rule 22 (expresion -> ID .)
+    DIVISION        reduce using rule 22 (expresion -> ID .)
+    DIVISION_ENTERA reduce using rule 22 (expresion -> ID .)
+    NUEVA_LINEA     reduce using rule 22 (expresion -> ID .)
+    CONST           reduce using rule 22 (expresion -> ID .)
+    ID              reduce using rule 22 (expresion -> ID .)
+    PARENTESIS_IZQUIERDO reduce using rule 22 (expresion -> ID .)
+    NUMERO          reduce using rule 22 (expresion -> ID .)
+    STRING          reduce using rule 22 (expresion -> ID .)
+    $end            reduce using rule 22 (expresion -> ID .)
+
+
+state 26
+
+    (14) expresion -> expresion SUMA expresion .
+    (14) expresion -> expresion . SUMA expresion
+    (15) expresion -> expresion . RESTA expresion
+    (16) expresion -> expresion . MULTIPLICACION expresion
+    (17) expresion -> expresion . DIVISION expresion
+    (18) expresion -> expresion . DIVISION_ENTERA expresion
+
+  ! shift/reduce conflict for SUMA resolved as shift
+  ! shift/reduce conflict for RESTA resolved as shift
+  ! shift/reduce conflict for MULTIPLICACION resolved as shift
+  ! shift/reduce conflict for DIVISION resolved as shift
+  ! shift/reduce conflict for DIVISION_ENTERA resolved as shift
+    NUEVA_LINEA     reduce using rule 14 (expresion -> expresion SUMA expresion .)
+    CONST           reduce using rule 14 (expresion -> expresion SUMA expresion .)
+    ID              reduce using rule 14 (expresion -> expresion SUMA expresion .)
+    PARENTESIS_IZQUIERDO reduce using rule 14 (expresion -> expresion SUMA expresion .)
+    NUMERO          reduce using rule 14 (expresion -> expresion SUMA expresion .)
+    STRING          reduce using rule 14 (expresion -> expresion SUMA expresion .)
+    $end            reduce using rule 14 (expresion -> expresion SUMA expresion .)
+    PARENTESIS_DERECHO reduce using rule 14 (expresion -> expresion SUMA expresion .)
+    SUMA            shift and go to state 17
+    RESTA           shift and go to state 18
+    MULTIPLICACION  shift and go to state 19
+    DIVISION        shift and go to state 20
+    DIVISION_ENTERA shift and go to state 21
+
+  ! SUMA            [ reduce using rule 14 (expresion -> expresion SUMA expresion .) ]
+  ! RESTA           [ reduce using rule 14 (expresion -> expresion SUMA expresion .) ]
+  ! MULTIPLICACION  [ reduce using rule 14 (expresion -> expresion SUMA expresion .) ]
+  ! DIVISION        [ reduce using rule 14 (expresion -> expresion SUMA expresion .) ]
+  ! DIVISION_ENTERA [ reduce using rule 14 (expresion -> expresion SUMA expresion .) ]
+
+
+state 27
+
+    (15) expresion -> expresion RESTA expresion .
+    (14) expresion -> expresion . SUMA expresion
+    (15) expresion -> expresion . RESTA expresion
+    (16) expresion -> expresion . MULTIPLICACION expresion
+    (17) expresion -> expresion . DIVISION expresion
+    (18) expresion -> expresion . DIVISION_ENTERA expresion
+
+  ! shift/reduce conflict for SUMA resolved as shift
+  ! shift/reduce conflict for RESTA resolved as shift
+  ! shift/reduce conflict for MULTIPLICACION resolved as shift
+  ! shift/reduce conflict for DIVISION resolved as shift
+  ! shift/reduce conflict for DIVISION_ENTERA resolved as shift
+    NUEVA_LINEA     reduce using rule 15 (expresion -> expresion RESTA expresion .)
+    CONST           reduce using rule 15 (expresion -> expresion RESTA expresion .)
+    ID              reduce using rule 15 (expresion -> expresion RESTA expresion .)
+    PARENTESIS_IZQUIERDO reduce using rule 15 (expresion -> expresion RESTA expresion .)
+    NUMERO          reduce using rule 15 (expresion -> expresion RESTA expresion .)
+    STRING          reduce using rule 15 (expresion -> expresion RESTA expresion .)
+    $end            reduce using rule 15 (expresion -> expresion RESTA expresion .)
+    PARENTESIS_DERECHO reduce using rule 15 (expresion -> expresion RESTA expresion .)
+    SUMA            shift and go to state 17
+    RESTA           shift and go to state 18
+    MULTIPLICACION  shift and go to state 19
+    DIVISION        shift and go to state 20
+    DIVISION_ENTERA shift and go to state 21
+
+  ! SUMA            [ reduce using rule 15 (expresion -> expresion RESTA expresion .) ]
+  ! RESTA           [ reduce using rule 15 (expresion -> expresion RESTA expresion .) ]
+  ! MULTIPLICACION  [ reduce using rule 15 (expresion -> expresion RESTA expresion .) ]
+  ! DIVISION        [ reduce using rule 15 (expresion -> expresion RESTA expresion .) ]
+  ! DIVISION_ENTERA [ reduce using rule 15 (expresion -> expresion RESTA expresion .) ]
+
+
+state 28
+
+    (16) expresion -> expresion MULTIPLICACION expresion .
+    (14) expresion -> expresion . SUMA expresion
+    (15) expresion -> expresion . RESTA expresion
+    (16) expresion -> expresion . MULTIPLICACION expresion
+    (17) expresion -> expresion . DIVISION expresion
+    (18) expresion -> expresion . DIVISION_ENTERA expresion
+
+  ! shift/reduce conflict for SUMA resolved as shift
+  ! shift/reduce conflict for RESTA resolved as shift
+  ! shift/reduce conflict for MULTIPLICACION resolved as shift
+  ! shift/reduce conflict for DIVISION resolved as shift
+  ! shift/reduce conflict for DIVISION_ENTERA resolved as shift
+    NUEVA_LINEA     reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .)
+    CONST           reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .)
+    ID              reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .)
+    PARENTESIS_IZQUIERDO reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .)
+    NUMERO          reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .)
+    STRING          reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .)
+    $end            reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .)
+    PARENTESIS_DERECHO reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .)
+    SUMA            shift and go to state 17
+    RESTA           shift and go to state 18
+    MULTIPLICACION  shift and go to state 19
+    DIVISION        shift and go to state 20
+    DIVISION_ENTERA shift and go to state 21
+
+  ! SUMA            [ reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .) ]
+  ! RESTA           [ reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .) ]
+  ! MULTIPLICACION  [ reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .) ]
+  ! DIVISION        [ reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .) ]
+  ! DIVISION_ENTERA [ reduce using rule 16 (expresion -> expresion MULTIPLICACION expresion .) ]
+
+
+state 29
+
+    (17) expresion -> expresion DIVISION expresion .
+    (14) expresion -> expresion . SUMA expresion
+    (15) expresion -> expresion . RESTA expresion
+    (16) expresion -> expresion . MULTIPLICACION expresion
+    (17) expresion -> expresion . DIVISION expresion
+    (18) expresion -> expresion . DIVISION_ENTERA expresion
+
+  ! shift/reduce conflict for SUMA resolved as shift
+  ! shift/reduce conflict for RESTA resolved as shift
+  ! shift/reduce conflict for MULTIPLICACION resolved as shift
+  ! shift/reduce conflict for DIVISION resolved as shift
+  ! shift/reduce conflict for DIVISION_ENTERA resolved as shift
+    NUEVA_LINEA     reduce using rule 17 (expresion -> expresion DIVISION expresion .)
+    CONST           reduce using rule 17 (expresion -> expresion DIVISION expresion .)
+    ID              reduce using rule 17 (expresion -> expresion DIVISION expresion .)
+    PARENTESIS_IZQUIERDO reduce using rule 17 (expresion -> expresion DIVISION expresion .)
+    NUMERO          reduce using rule 17 (expresion -> expresion DIVISION expresion .)
+    STRING          reduce using rule 17 (expresion -> expresion DIVISION expresion .)
+    $end            reduce using rule 17 (expresion -> expresion DIVISION expresion .)
+    PARENTESIS_DERECHO reduce using rule 17 (expresion -> expresion DIVISION expresion .)
+    SUMA            shift and go to state 17
+    RESTA           shift and go to state 18
+    MULTIPLICACION  shift and go to state 19
+    DIVISION        shift and go to state 20
+    DIVISION_ENTERA shift and go to state 21
+
+  ! SUMA            [ reduce using rule 17 (expresion -> expresion DIVISION expresion .) ]
+  ! RESTA           [ reduce using rule 17 (expresion -> expresion DIVISION expresion .) ]
+  ! MULTIPLICACION  [ reduce using rule 17 (expresion -> expresion DIVISION expresion .) ]
+  ! DIVISION        [ reduce using rule 17 (expresion -> expresion DIVISION expresion .) ]
+  ! DIVISION_ENTERA [ reduce using rule 17 (expresion -> expresion DIVISION expresion .) ]
+
+
+state 30
+
+    (18) expresion -> expresion DIVISION_ENTERA expresion .
+    (14) expresion -> expresion . SUMA expresion
+    (15) expresion -> expresion . RESTA expresion
+    (16) expresion -> expresion . MULTIPLICACION expresion
+    (17) expresion -> expresion . DIVISION expresion
+    (18) expresion -> expresion . DIVISION_ENTERA expresion
+
+  ! shift/reduce conflict for SUMA resolved as shift
+  ! shift/reduce conflict for RESTA resolved as shift
+  ! shift/reduce conflict for MULTIPLICACION resolved as shift
+  ! shift/reduce conflict for DIVISION resolved as shift
+  ! shift/reduce conflict for DIVISION_ENTERA resolved as shift
+    NUEVA_LINEA     reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .)
+    CONST           reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .)
+    ID              reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .)
+    PARENTESIS_IZQUIERDO reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .)
+    NUMERO          reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .)
+    STRING          reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .)
+    $end            reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .)
+    PARENTESIS_DERECHO reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .)
+    SUMA            shift and go to state 17
+    RESTA           shift and go to state 18
+    MULTIPLICACION  shift and go to state 19
+    DIVISION        shift and go to state 20
+    DIVISION_ENTERA shift and go to state 21
+
+  ! SUMA            [ reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .) ]
+  ! RESTA           [ reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .) ]
+  ! MULTIPLICACION  [ reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .) ]
+  ! DIVISION        [ reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .) ]
+  ! DIVISION_ENTERA [ reduce using rule 18 (expresion -> expresion DIVISION_ENTERA expresion .) ]
+
+
+state 31
+
+    (11) declaracion_constante -> CONST ID NUMERO .
+
+    NUEVA_LINEA     reduce using rule 11 (declaracion_constante -> CONST ID NUMERO .)
+    CONST           reduce using rule 11 (declaracion_constante -> CONST ID NUMERO .)
+    ID              reduce using rule 11 (declaracion_constante -> CONST ID NUMERO .)
+    PARENTESIS_IZQUIERDO reduce using rule 11 (declaracion_constante -> CONST ID NUMERO .)
+    NUMERO          reduce using rule 11 (declaracion_constante -> CONST ID NUMERO .)
+    STRING          reduce using rule 11 (declaracion_constante -> CONST ID NUMERO .)
+    $end            reduce using rule 11 (declaracion_constante -> CONST ID NUMERO .)
+
+
+state 32
+
+    (12) declaracion_constante -> CONST ID STRING .
+
+    NUEVA_LINEA     reduce using rule 12 (declaracion_constante -> CONST ID STRING .)
+    CONST           reduce using rule 12 (declaracion_constante -> CONST ID STRING .)
+    ID              reduce using rule 12 (declaracion_constante -> CONST ID STRING .)
+    PARENTESIS_IZQUIERDO reduce using rule 12 (declaracion_constante -> CONST ID STRING .)
+    NUMERO          reduce using rule 12 (declaracion_constante -> CONST ID STRING .)
+    STRING          reduce using rule 12 (declaracion_constante -> CONST ID STRING .)
+    $end            reduce using rule 12 (declaracion_constante -> CONST ID STRING .)
+
+
+state 33
+
+    (13) declaracion_asignacion -> ID ASIGNACION expresion .
+    (14) expresion -> expresion . SUMA expresion
+    (15) expresion -> expresion . RESTA expresion
+    (16) expresion -> expresion . MULTIPLICACION expresion
+    (17) expresion -> expresion . DIVISION expresion
+    (18) expresion -> expresion . DIVISION_ENTERA expresion
+
+    NUEVA_LINEA     reduce using rule 13 (declaracion_asignacion -> ID ASIGNACION expresion .)
+    CONST           reduce using rule 13 (declaracion_asignacion -> ID ASIGNACION expresion .)
+    ID              reduce using rule 13 (declaracion_asignacion -> ID ASIGNACION expresion .)
+    PARENTESIS_IZQUIERDO reduce using rule 13 (declaracion_asignacion -> ID ASIGNACION expresion .)
+    NUMERO          reduce using rule 13 (declaracion_asignacion -> ID ASIGNACION expresion .)
+    STRING          reduce using rule 13 (declaracion_asignacion -> ID ASIGNACION expresion .)
+    $end            reduce using rule 13 (declaracion_asignacion -> ID ASIGNACION expresion .)
+    SUMA            shift and go to state 17
+    RESTA           shift and go to state 18
+    MULTIPLICACION  shift and go to state 19
+    DIVISION        shift and go to state 20
+    DIVISION_ENTERA shift and go to state 21
+
+
+state 34
+
+    (19) expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .
+
+    SUMA            reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    RESTA           reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    MULTIPLICACION  reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    DIVISION        reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    DIVISION_ENTERA reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    NUEVA_LINEA     reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    CONST           reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    ID              reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    PARENTESIS_IZQUIERDO reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    NUMERO          reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    STRING          reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    $end            reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+    PARENTESIS_DERECHO reduce using rule 19 (expresion -> PARENTESIS_IZQUIERDO expresion PARENTESIS_DERECHO .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for NUEVA_LINEA in state 6 resolved as shift
+WARNING: shift/reduce conflict for SUMA in state 26 resolved as shift
+WARNING: shift/reduce conflict for RESTA in state 26 resolved as shift
+WARNING: shift/reduce conflict for MULTIPLICACION in state 26 resolved as shift
+WARNING: shift/reduce conflict for DIVISION in state 26 resolved as shift
+WARNING: shift/reduce conflict for DIVISION_ENTERA in state 26 resolved as shift
+WARNING: shift/reduce conflict for SUMA in state 27 resolved as shift
+WARNING: shift/reduce conflict for RESTA in state 27 resolved as shift
+WARNING: shift/reduce conflict for MULTIPLICACION in state 27 resolved as shift
+WARNING: shift/reduce conflict for DIVISION in state 27 resolved as shift
+WARNING: shift/reduce conflict for DIVISION_ENTERA in state 27 resolved as shift
+WARNING: shift/reduce conflict for SUMA in state 28 resolved as shift
+WARNING: shift/reduce conflict for RESTA in state 28 resolved as shift
+WARNING: shift/reduce conflict for MULTIPLICACION in state 28 resolved as shift
+WARNING: shift/reduce conflict for DIVISION in state 28 resolved as shift
+WARNING: shift/reduce conflict for DIVISION_ENTERA in state 28 resolved as shift
+WARNING: shift/reduce conflict for SUMA in state 29 resolved as shift
+WARNING: shift/reduce conflict for RESTA in state 29 resolved as shift
+WARNING: shift/reduce conflict for MULTIPLICACION in state 29 resolved as shift
+WARNING: shift/reduce conflict for DIVISION in state 29 resolved as shift
+WARNING: shift/reduce conflict for DIVISION_ENTERA in state 29 resolved as shift
+WARNING: shift/reduce conflict for SUMA in state 30 resolved as shift
+WARNING: shift/reduce conflict for RESTA in state 30 resolved as shift
+WARNING: shift/reduce conflict for MULTIPLICACION in state 30 resolved as shift
+WARNING: shift/reduce conflict for DIVISION in state 30 resolved as shift
+WARNING: shift/reduce conflict for DIVISION_ENTERA in state 30 resolved as shift

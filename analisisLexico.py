@@ -100,6 +100,7 @@ tokens = (
     "NUEVA_LINEA",
     "INDENTACION",
     "ESPACIO",
+    "COMA",
 )
 
 # ------------------------------------------------------------
@@ -169,6 +170,8 @@ t_ASIGNACION = r"="
 # Delimitadores
 t_PARENTESIS_IZQUIERDO = r"\("
 t_PARENTESIS_DERECHO = r"\)"
+t_COMA = r","
+
 
 # Literales e identificadores
 

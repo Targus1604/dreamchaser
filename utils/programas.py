@@ -73,7 +73,7 @@ const MATERIA 'LENGUAJES DE PROGRAMACIÓN'
 const MATERIA 'REPETIDA'
 a  = 10
 b = 20
-    suma = a + b
+suma = a + b
 """
 
 programa_minimo = """
