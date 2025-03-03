@@ -70,8 +70,7 @@ class Computadora:
             832: self.modulo,  # MOD
         }
 
-    """
-    -------------------------
+    """-------------------------
     ENLAZADOR - CARGADOR
     -------------------------
     """
@@ -101,9 +100,13 @@ class Computadora:
     def ejecutar_instruccion(self):
         if self.pc < len(self.memoria):
             instruccion = int(self.memoria[self.pc], 2)
-            print(f"Ejecutando instrucción en PC={self.pc}: {self.memoria[self.pc]}")
+            mensaje = f"Ejecutando instrucción en PC={self.pc}: {self.memoria[self.pc]}"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
             if instruccion == 0b00000000000000000000000000000000:
-                print("Ejecución finalizada.")
+                mensaje = "Ejecución finalizada."
+                print(mensaje)
+                self.interfaz.actualizar_consola(mensaje)
             else:
                 self.decodificar_y_ejecutar(instruccion)
                 self.pc += 1
@@ -123,12 +126,16 @@ class Computadora:
             if (
                 instruccion == 0b00000000000000000000000000000000
             ):  # Código de operación 0 "PARAR"
-                print("Ejecución finalizada.")
+                mensaje = "Ejecución finalizada."
+                print(mensaje)
+                self.interfaz.actualizar_consola(mensaje)
                 break
             else:
                 self.decodificar_y_ejecutar(instruccion)  # Ejecutar la instrucción
                 self.pc += 1  # Incrementar el puntero de instrucción hasta que se ejecute la instrucción de parar
-                print(f"PC incrementado a: {self.pc}")
+                mensaje = f"PC incrementado a: {self.pc}"
+                print(mensaje)
+                self.interfaz.actualizar_consola(mensaje)
                 self.actualizar_interfaz()
 
     """
@@ -150,11 +157,6 @@ class Computadora:
         reg1 = (instruccion & 0x00003800) >> 11  # Registro 1
         direccion = instruccion & 0x000007FF  # direccion de memoria
 
-        print(f"Decodificando instrucción: {bin(instruccion)}")
-        print(
-            f"Opcode: {bin(opcode)}, Opcode1: {bin(opcode1)}, Opcode2: {bin(opcode2)}, Opcode3: {bin(opcode3)}"
-        )
-        print(f"Registro 1: {reg1}, Dirección: {direccion}")
         # Llamar la función correspondiente al opcode, si existe
         if opcode in self.operaciones_registro_memoria:
             self.operaciones_registro_memoria[opcode](reg1, direccion)
@@ -172,7 +174,9 @@ class Computadora:
             reg2 = instruccion & 0x00000007
             self.operaciones_registros[opcode3](reg1, reg2)
         else:
-            print(f"Operación desconocida: {opcode}")
+            mensaje = f"Operación desconocida: {opcode}"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
 
     """--------------------------------------------
     OPERACIONES ENTRE REGISTRO Y MEMORIA
@@ -181,10 +185,16 @@ class Computadora:
     def cargar(self, reg1, direccion):
         """CARGAR R1, M[valor]"""
         self.registros[reg1] = int(self.memoria[direccion], 2)
+        mensaje = f"CARGAR: Registro {reg1} cargado con valor de memoria en dirección {direccion}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def almacenar(self, reg1, direccion):
         """ALMACENAR R1, M[valor]"""
         self.memoria[direccion] = format(self.registros[reg1], "032b")
+        mensaje = f"ALMACENAR: Valor del registro {reg1} almacenado en memoria en dirección {direccion}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     """---------------------------------------------
     OPERACIONES ENTRE REGISTRO Y VALORES
@@ -193,31 +203,51 @@ class Computadora:
     def lsl(self, reg1, valor):
         """LSL R1, valor"""
         self.registros[reg1] = self.registros[reg1] << valor
+        mensaje = (
+            f"LSL: Registro {reg1} desplazado a la izquierda por {valor} posiciones"
+        )
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def lsr(self, reg1, valor):
         """LSR (Logical Shift Right) R1, valor"""
         # Desplazamiento lógico a la derecha
         self.registros[reg1] = (self.registros[reg1] & 0xFFFFFFFF) >> valor
+        mensaje = f"LSR: Registro {reg1} desplazado a la derecha por {valor} posiciones"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def asr(self, reg1, valor):
         """ASR R1, valor"""
         self.registros[reg1] = self.registros[reg1] >> valor
+        mensaje = f"ASR: Registro {reg1} desplazado aritméticamente a la derecha por {valor} posiciones"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def cargar_valor(self, reg1, valor):
         """CARGAR VALOR R1, valor"""
         self.registros[reg1] = valor
+        mensaje = f"CARGAR VALOR: Registro {reg1} cargado con valor {valor}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def rotacionl(self, reg1, valor):
         """ROTACION IZQUIERDA R1, valor"""
         self.registros[reg1] = (self.registros[reg1] << valor) | (
             self.registros[reg1] >> (32 - valor)
         )
+        mensaje = f"ROTACION IZQUIERDA: Registro {reg1} rotado a la izquierda por {valor} posiciones"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def rotacionr(self, reg1, valor):
         """ROTACION DERECHA R1, valor"""
         self.registros[reg1] = (self.registros[reg1] >> valor) | (
             self.registros[reg1] << (32 - valor)
         )
+        mensaje = f"ROTACION DERECHA: Registro {reg1} rotado a la derecha por {valor} posiciones"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     """-------------------------------
     OPERACIONES DE SALTO
@@ -227,40 +257,64 @@ class Computadora:
         """SALTAR SI CERO M[valor]"""
         if self.bandera_zero == 1:
             self.pc = direccion - 1
+            mensaje = f"SALTAR SI CERO: Saltando a dirección {direccion} porque bandera zero está activa"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
 
     def saltar_si_positivo(self, direccion):
         """SALTAR SI POSITIVO M[valor]"""
         if self.bandera_neg == 0:
             self.pc = direccion - 1
+            mensaje = f"SALTAR SI POSITIVO: Saltando a dirección {direccion} porque bandera negativo no está activa"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
 
     def saltar_si_negativo(self, direccion):
         """SALTAR SI NEGATIVO M[valor]"""
         if self.bandera_neg == 1:
             self.pc = direccion - 1
+            mensaje = f"SALTAR SI NEGATIVO: Saltando a dirección {direccion} porque bandera negativo está activa"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
 
     def saltar_si_par(self, direccion):
         """SALTAR SI PAR M[valor]"""
         if self.bandera_par == 1:
             self.pc = direccion - 1
+            mensaje = f"SALTAR SI PAR: Saltando a dirección {direccion} porque bandera par está activa"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
 
     def saltar_si_carry(self, direccion):
         """SALTAR SI CARRY M[valor]"""
         if self.bandera_carry == 1:
             self.pc = direccion - 1
+            mensaje = f"SALTAR SI CARRY: Saltando a dirección {direccion} porque bandera carry está activa"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
 
     def saltar_si_desbordamiento(self, direccion):
         """SALTAR SI DESBORDAMIENTO M[valor]"""
         if self.bandera_desb == 1:
             self.pc = direccion - 1
+            mensaje = f"SALTAR SI DESBORDAMIENTO: Saltando a dirección {direccion} porque bandera desbordamiento está activa"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
 
     def saltar(self, direccion):
         """SALTAR M[valor]"""
         self.pc = direccion - 1
+        mensaje = f"SALTAR: Saltando a dirección {direccion}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def saltar_si_no_desbordamiento(self, direccion):
         """SALTAR SI NO DESBORDAMIENTO M[valor]"""
         if self.bandera_desb == 0:
             self.pc = direccion - 1
+            mensaje = f"SALTAR SI NO DESBORDAMIENTO: Saltando a dirección {direccion} porque bandera desbordamiento no está activa"
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
 
     """-----------------------------------------------------------------
     OPERACIONES ENTRE REGISTROS R1 Y R2 CON ACTUALIZACIÓN DE BANDERAS
@@ -269,18 +323,30 @@ class Computadora:
     def or_(self, reg1, reg2):
         """OR R1, R2"""
         self.registros[reg1] = self.registros[reg1] | self.registros[reg2]
+        mensaje = f"OR: Registro {reg1} OR con Registro {reg2}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def and_(self, reg1, reg2):
         """AND R1, R2"""
         self.registros[reg1] = self.registros[reg1] & self.registros[reg2]
+        mensaje = f"AND: Registro {reg1} AND con Registro {reg2}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def xor_(self, reg1, reg2):
         """XOR R1, R2"""
         self.registros[reg1] = self.registros[reg1] ^ self.registros[reg2]
+        mensaje = f"XOR: Registro {reg1} XOR con Registro {reg2}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def not_(self, reg1):
         """NOT R1"""
         self.registros[reg1] = ~self.registros[reg1]
+        mensaje = f"NOT: Registro {reg1} negado"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def sumar(self, reg1, reg2):
         """SUMAR R1, R2"""
@@ -298,6 +364,9 @@ class Computadora:
         self.registros[reg1] = (
             resultado & 0xFFFFFFFF
         )  # Solo se almacenan los 32 bits menos significativos
+        mensaje = f"SUMAR: Registro {reg1} sumado con Registro {reg2}, resultado {self.registros[reg1]}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def restar(self, reg1, reg2):
         """RESTAR R1, R2"""
@@ -312,12 +381,14 @@ class Computadora:
         ) or (self.registros[reg1] < 0 and self.registros[reg2] < 0 and resultado >= 0):
             self.bandera_desb = 1
         self.registros[reg1] = resultado & 0xFFFFFFFF
+        mensaje = f"RESTAR: Registro {reg1} restado con Registro {reg2}, resultado {self.registros[reg1]} "
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def multiplicar(self, reg1, reg2):
         """MULT R1, R2"""
         resultado = self.registros[reg1] * self.registros[reg2]
         self.bandera_carry = 1 if resultado > 0xFFFFFFFF else 0
-        self.bandera_zero = 1 if resultado == 0 else 0
         self.bandera_zero = 1 if resultado == 0 else 0
         self.bandera_par = 1 if resultado % 2 == 0 else 0
         self.bandera_neg = 1 if resultado < 0 else 0
@@ -326,6 +397,9 @@ class Computadora:
         ) or (self.registros[reg1] < 0 and self.registros[reg2] < 0 and resultado >= 0):
             self.bandera_desb = 1
         self.registros[reg1] = resultado & 0xFFFFFFFF
+        mensaje = f"MULTIPLICAR: Registro {reg1} multiplicado con Registro {reg2}, resultado {self.registros[reg1]}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def dividir(self, reg1, reg2):
         """DIV R1, R2"""
@@ -343,10 +417,16 @@ class Computadora:
 
         self.registros[reg1] = cociente & 0xFFFFFFFF
         self.registros[reg2] = residuo & 0xFFFFFFFF
+        mensaje = f"DIVIDIR: Registro {reg1} dividido por Registro {reg2}, cociente {self.registros[reg1]}, residuo {self.registros[reg2]}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def copiar(self, reg1, reg2):
         """COPIAR R1, R2"""
         self.registros[reg2] = self.registros[reg1]
+        mensaje = f"COPIAR: Registro {reg1} copiado a Registro {reg2}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def comparar(self, reg1, reg2):
         """COMP R1, R2"""
@@ -354,6 +434,9 @@ class Computadora:
         self.bandera_zero = 1 if resultado == 0 else 0
         self.bandera_neg = 1 if resultado < 0 else 0
         self.bandera_carry = 1 if resultado < 0 else 0
+        mensaje = f"COMPARAR: Registro {reg1} comparado con Registro {reg2}, resultado {resultado}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def intercambiar(self, reg1, reg2):
         """INTERCAMBIAR R1, R2"""
@@ -361,13 +444,18 @@ class Computadora:
             self.registros[reg2],
             self.registros[reg1],
         )
+        mensaje = f"INTERCAMBIAR: Registro {reg1} intercambiado con Registro {reg2}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     def modulo(self, reg1, reg2):
         """MOD R1, R2"""
         if self.registros[reg2] == 0:
-            print(
+            mensaje = (
                 f"Error: División por cero en la operación MOD entre R{reg1} y R{reg2}"
             )
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje)
             return
         resultado = self.registros[reg1] % self.registros[reg2]
         self.bandera_carry = 1 if resultado > 0xFFFFFFFF else 0
@@ -375,6 +463,9 @@ class Computadora:
         self.bandera_par = 1 if resultado % 2 == 0 else 0
         self.bandera_neg = 1 if resultado < 0 else 0
         self.registros[reg1] = resultado & 0xFFFFFFFF
+        mensaje = f"MODULO: Registro {reg1} módulo Registro {reg2}, resultado {self.registros[reg1]}"
+        print(mensaje)
+        self.interfaz.actualizar_consola(mensaje)
 
     """
     IMPRIMIR ESTADO DEL COMPUTADOR A TRAVÉS DEL CUAL SE PUEDEN INTERPRETAR RESULTADOS

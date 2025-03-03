@@ -18,7 +18,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.computadora = Computadora()  # Crear la instancia de Computadora aquí
-
+        self.computadora = Computadora()
         self.inicializar()
 
         self.Abrir.clicked.connect(self.open_file_dialog)
@@ -32,8 +32,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Sig_instruccion.clicked.connect(self.siguiente_instruccion)
 
     def inicializar(self):
+
         self.ResultadoEnsamblador.clear()
         self.CodigoEnsamblador.clear()
+        self.Consola.clear()
+        self.computadora = Computadora()
+        self.computadora.interfaz = self
         # ResultadoEnsamblador QTextBrowser
         # Crear múltiples líneas de 32 ceros
         lineas = ["0" * 32 for _ in range(20)]  # Genera 10 líneas con 32 ceros cada una
@@ -81,6 +85,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Tabla_Registros.resizeColumnsToContents()
         self.Tabla_Alu.resizeColumnsToContents()
         self.Tabla_Unidad_Control.resizeColumnsToContents()
+
+    def actualizar_consola(self, mensaje):
+        self.Consola.appendPlainText(mensaje)  # Agregar el mensaje a la consola
 
     def actualizar_unidad_control(self):
         nombres_control = ["PC"]
@@ -273,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.computadora.cargar_codigo(
             codigo_formateado, direccion_de_inicio=direccion_inicio
         )
-
+        self.computadora.pc = direccion_inicio
         # Obtener memoria cargada
         memoria = self.computadora.mostrar_memoria()
         # Limpiar la tabla antes de agregar nuevos datos
