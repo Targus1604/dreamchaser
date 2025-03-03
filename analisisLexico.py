@@ -132,12 +132,19 @@ def t_IMPORTAR(t):
 # Regla para las constantes
 @lex.TOKEN(constante)
 def t_CONST(t):
-    # Separar el nombre de la constante y su valor
+    r"const\s+[a-zA-Z_][a-zA-Z0-9_]*\s+([0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?|\'.*?\')"
+    # Obtener las partes de la declaración
     parts = t.value.split(maxsplit=2)
+    if len(parts) < 3:
+        print(f"Error: declaración de constante inválida '{t.value}'")
+        t.lexer.skip(1)
+        return
+
     const, nombre, valor = parts[0], parts[1], parts[2]
     # Eliminar espacios en blanco
     nombre = nombre.strip()
     valor = valor.strip()
+
     # Agregar la constante al diccionario
     global constantes
     # Verificar si la constante ya existe
@@ -145,6 +152,7 @@ def t_CONST(t):
         print(f"Error: la constante '{nombre}' ya ha sido declarada")
         t.lexer.skip(1)
         return
+
     constantes[nombre] = valor
     return t
 
@@ -194,6 +202,7 @@ def t_ID(t):
     )  # Verificar si es una palabra reservada
     # verificar si esta en el diccionario de constantes y reemplazar
     if t.value in constantes:
+        t.type = "NUMERO"
         t.value = constantes[t.value]
     return t
 
