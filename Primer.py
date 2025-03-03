@@ -30,6 +30,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Enlazar.clicked.connect(self.enlazar_cargar)
         self.Reiniciar.clicked.connect(self.inicializar)
         self.Sig_instruccion.clicked.connect(self.siguiente_instruccion)
+        self.Saltar_Ultima_Instruccion.clicked.connect(self.ejecutar_completo)
 
     def inicializar(self):
 
@@ -86,8 +87,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.Tabla_Alu.resizeColumnsToContents()
         self.Tabla_Unidad_Control.resizeColumnsToContents()
 
-    def actualizar_consola(self, mensaje):
-        self.Consola.appendPlainText(mensaje)  # Agregar el mensaje a la consola
+    def actualizar_consola(self, mensaje, color="black"):
+        mensaje_html = f'<span style="color:{color};">{mensaje}</span>'
+        self.Consola.appendHtml(mensaje_html)  # Agregar el mensaje a la consola
 
     def actualizar_unidad_control(self):
         nombres_control = ["PC"]
@@ -149,6 +151,40 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.Tabla_Alu.setVerticalHeaderItem(fila, QTableWidgetItem(nombre))
             self.Tabla_Alu.setItem(fila, 0, QTableWidgetItem(binario))
             self.Tabla_Alu.setItem(fila, 1, QTableWidgetItem(decimal))
+
+    def ejecutar_completo(self):
+        visitados = (
+            {}
+        )  # Diccionario para almacenar las posiciones del pc y su conteo de visitas
+        max_visitas = (
+            10  # Número máximo de veces que se permite visitar una posición del pc
+        )
+        bucle_infinito = False  # Bandera para detectar bucle infinito
+
+        while self.computadora.pc < self.computadora.longitud_programa:
+            if self.computadora.pc in visitados:
+                visitados[self.computadora.pc] += 1
+                if visitados[self.computadora.pc] > max_visitas:
+                    mensaje = "Ejecución detenida: se detectó un bucle infinito."
+                    print(mensaje)
+                    self.actualizar_consola(
+                        mensaje, color="red"
+                    )  # Enviar el mensaje en rojo
+                    bucle_infinito = True
+                    break  # Detener la ejecución si se detecta un bucle infinito
+            else:
+                visitados[self.computadora.pc] = 1
+
+            self.computadora.ejecutar_instruccion()
+            self.actualizar_unidad_control()
+            self.actualizar_registros()
+            self.actualizar_indicadores_alu()
+
+        if not bucle_infinito:
+            # Este bloque se ejecuta si el bucle while termina sin encontrar un bucle infinito
+            mensaje = "Ejecución Terminada"
+            print(mensaje)
+            self.actualizar_consola(mensaje, color="green")
 
     def siguiente_instruccion(self):
         self.computadora.ejecutar_instruccion()
@@ -266,8 +302,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def ensamblar(self):
         codigo = self.CodigoEnsamblador.toPlainText()
         codigo_formateado = codigo.splitlines()
-        codigo_ensamblado = "\n".join(ensamblador(codigo_formateado)[0])
-        self.ResultadoEnsamblador.setPlainText(codigo_ensamblado)
+        try:
+            codigo_ensamblado = "\n".join(ensamblador(codigo_formateado)[0])
+            self.ResultadoEnsamblador.setPlainText(codigo_ensamblado)
+        except ValueError as e:
+            mensaje = f"Error: {str(e)}"
+            print(mensaje)
+            self.actualizar_consola(mensaje, color="red")
 
     def enlazar_cargar(self):
         # Obtener el código desde ResultadoEnsamblador (QPlainTextEdit)
@@ -277,39 +318,45 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Obtener la dirección de inicio desde QSpinBox
         direccion_inicio = self.Localizacion.value()
 
-        self.computadora.cargar_codigo(
-            codigo_formateado, direccion_de_inicio=direccion_inicio
-        )
-        self.computadora.pc = direccion_inicio
-        # Obtener memoria cargada
-        memoria = self.computadora.mostrar_memoria()
-        # Limpiar la tabla antes de agregar nuevos datos
-        # self.SalidaEnlazarCargar.clearContents()
-        # self.SalidaEnlazarCargar.setRowCount(0)
+        try:
+            self.computadora.cargar_codigo(
+                codigo_formateado, direccion_de_inicio=direccion_inicio
+            )
+            self.computadora.pc = direccion_inicio
+            # Obtener memoria cargada
+            memoria = self.computadora.mostrar_memoria()
+            # Limpiar la tabla antes de agregar nuevos datos
+            # self.SalidaEnlazarCargar.clearContents()
+            # self.SalidaEnlazarCargar.setRowCount(0)
 
-        self.SalidaEnlazarCargar.setRowCount(1024)
+            self.SalidaEnlazarCargar.setRowCount(1024)
 
-        # No limpiar toda la tabla, solo actualizar las filas necesarias
-        for direccion, instr in memoria:
-            fila = int(
-                direccion
-            )  # Convertir dirección en entero (asumiendo formato hexadecimal)
+            # No limpiar toda la tabla, solo actualizar las filas necesarias
+            for direccion, instr in memoria:
+                fila = int(
+                    direccion
+                )  # Convertir dirección en entero (asumiendo formato hexadecimal)
 
-            if 0 <= fila < self.SalidaEnlazarCargar.rowCount():
-                item_binario = QTableWidgetItem(str(instr))
-                item_binario.setTextAlignment(
-                    Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
-                )
-                item_binario.setFlags(
-                    Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled
-                )
-                self.SalidaEnlazarCargar.setItem(
-                    fila, 0, item_binario
-                )  # Agregar el valor en la posición correcta
+                if 0 <= fila < self.SalidaEnlazarCargar.rowCount():
+                    item_binario = QTableWidgetItem(str(instr))
+                    item_binario.setTextAlignment(
+                        Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+                    )
+                    item_binario.setFlags(
+                        Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled
+                    )
+                    self.SalidaEnlazarCargar.setItem(
+                        fila, 0, item_binario
+                    )  # Agregar el valor en la posición correcta
 
-        # Ajustar tamaño de la columna
-        # self.SalidaEnlazarCargar.setColumnWidth(0, 500)  # Ajusta según sea necesario
-        self.SalidaEnlazarCargar.resizeColumnsToContents()  # Ajusta el ancho según el contenido
+            # Ajustar tamaño de la columna
+            # self.SalidaEnlazarCargar.setColumnWidth(0, 500)  # Ajusta según sea necesario
+            self.SalidaEnlazarCargar.resizeColumnsToContents()  # Ajusta el ancho según el contenido
+
+        except ValueError as e:
+            mensaje = f"Error: {str(e)}"
+            print(mensaje)
+            self.actualizar_consola(mensaje, color="red")
 
 
 app = QtWidgets.QApplication(sys.argv)

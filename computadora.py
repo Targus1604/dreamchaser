@@ -24,6 +24,7 @@ class Computadora:
         # Puntero de instrucción (PC)
         self.pc = 0
         self.interfaz = None
+        self.longitud_programa = 0
 
         """----------------------------------------------------------------------------------------------------
 
@@ -81,6 +82,7 @@ class Computadora:
         mapa_memoria = enlazador_cargador(codigo_entrada, direccion_de_inicio)
         for direccion, instr in mapa_memoria.items():
             self.memoria[direccion] = instr
+        self.longitud_programa = len(codigo_entrada)
         return self.memoria
 
     def mostrar_memoria(self):
@@ -104,11 +106,18 @@ class Computadora:
             print(mensaje)
             self.interfaz.actualizar_consola(mensaje)
             if instruccion == 0b00000000000000000000000000000000:
-                mensaje = "Ejecución finalizada."
+                mensaje = "PARAR Ejecución finalizada."
                 print(mensaje)
-                self.interfaz.actualizar_consola(mensaje)
+                self.interfaz.actualizar_consola(mensaje, "green")
+                return
             else:
-                self.decodificar_y_ejecutar(instruccion)
+                try:
+                    self.decodificar_y_ejecutar(instruccion)
+                except KeyError:
+                    mensaje = f"Error: Instrucción desconocida en PC={self.pc}: {self.memoria[self.pc]}"
+                    print(mensaje)
+                    self.interfaz.actualizar_consola(mensaje, color="red")
+                    return
                 self.pc += 1
                 self.actualizar_interfaz()
 
@@ -117,26 +126,6 @@ class Computadora:
             self.interfaz.actualizar_registros()
             self.interfaz.actualizar_indicadores_alu()
             self.interfaz.actualizar_unidad_control()
-
-    def ejecutar(self, direccion_inicio=0):
-        """Ejecuta las instrucciones cargadas en la memoria"""
-        self.pc = direccion_inicio
-        while self.pc < len(self.memoria):  # Mientras haya instrucciones por ejecutar
-            instruccion = int(self.memoria[self.pc], 2)
-            if (
-                instruccion == 0b00000000000000000000000000000000
-            ):  # Código de operación 0 "PARAR"
-                mensaje = "Ejecución finalizada."
-                print(mensaje)
-                self.interfaz.actualizar_consola(mensaje)
-                break
-            else:
-                self.decodificar_y_ejecutar(instruccion)  # Ejecutar la instrucción
-                self.pc += 1  # Incrementar el puntero de instrucción hasta que se ejecute la instrucción de parar
-                mensaje = f"PC incrementado a: {self.pc}"
-                print(mensaje)
-                self.interfaz.actualizar_consola(mensaje)
-                self.actualizar_interfaz()
 
     """
     ---------------------------------------------------------------------------------------------------------
@@ -403,6 +392,14 @@ class Computadora:
 
     def dividir(self, reg1, reg2):
         """DIV R1, R2"""
+        if self.registros[reg2] == 0:
+            mensaje = (
+                f"Error: División por cero en la operación DIV entre R{reg1} y R{reg2}"
+            )
+            print(mensaje)
+            self.interfaz.actualizar_consola(mensaje, color="red")
+            return
+
         cociente = self.registros[reg1] // self.registros[reg2]
         residuo = self.registros[reg1] % self.registros[reg2]
 
@@ -455,7 +452,7 @@ class Computadora:
                 f"Error: División por cero en la operación MOD entre R{reg1} y R{reg2}"
             )
             print(mensaje)
-            self.interfaz.actualizar_consola(mensaje)
+            self.interfaz.actualizar_consola(mensaje, color="red")
             return
         resultado = self.registros[reg1] % self.registros[reg2]
         self.bandera_carry = 1 if resultado > 0xFFFFFFFF else 0
